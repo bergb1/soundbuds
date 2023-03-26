@@ -8,4 +8,4 @@ During the course 'Server Side Scripting Frameworks' we need to create a persona
 The other students are able to become artists and admins, which both have access to functionalities that I do not want them to have, so there is an attack surface they could abuse, but it is going to be my goal to not leave vulnerabilities in the system which they could abuse to gain these roles.
 
 ## Database Diagram
-![Database Diagram](database_diagram/SSSF%20Personal%20Project%20Diagram.png)
+![Database Diagram](database_diagram/SSSF%20Personal%20Project%20Diagram.jpeg)
