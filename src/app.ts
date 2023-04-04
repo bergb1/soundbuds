@@ -1,9 +1,22 @@
 import express, { Express } from 'express';
+import helmet from 'helmet';
+import { notFound, errorHandler } from './middlewares';
 
 // Configuration for Express
 const conf_app = async (app: Express) => {
     try {
-        // TODO: Configure Express js
+        // Configure helmet
+        app.use(
+            helmet({
+                crossOriginEmbedderPolicy: false,
+                contentSecurityPolicy: false
+            })
+        );
+
+        // Add handles
+        app.use(notFound);
+        app.use(errorHandler);
+
     } catch (err) {
         console.error((err as Error).message);
     }
