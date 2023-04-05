@@ -1,6 +1,9 @@
+import { ApolloServer } from 'apollo-server-express';
+import { buildSchema } from 'type-graphql';
 import express, { Express } from 'express';
 import helmet from 'helmet';
 import { notFound, errorHandler } from './middlewares';
+import { TaskResolver } from './api/resolvers/task';
 
 // Configuration for Express
 const conf_app = async (app: Express) => {
@@ -13,7 +16,18 @@ const conf_app = async (app: Express) => {
             })
         );
 
-        // Add handles
+        // Setup Apollo Server
+        const apolloServer = new ApolloServer({
+            introspection: true,
+            schema: await buildSchema({
+                resolvers: [TaskResolver],
+                validate: false
+            })
+        });
+        await apolloServer.start();
+        apolloServer.applyMiddleware({ app });
+
+        // Setup handles
         app.use(notFound);
         app.use(errorHandler);
 
