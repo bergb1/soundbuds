@@ -3,7 +3,7 @@ import { buildSchema } from 'type-graphql';
 import express, { Express } from 'express';
 import helmet from 'helmet';
 import { notFound, errorHandler } from './middlewares';
-import { TaskResolver } from './api/resolvers/task';
+import { UserResolver } from './api/resolvers/userResolver';
 
 // Configuration for Express
 const conf_app = async (app: Express) => {
@@ -18,9 +18,9 @@ const conf_app = async (app: Express) => {
 
         // Setup Apollo Server
         const apolloServer = new ApolloServer({
-            introspection: true,
+            introspection: process.env.NODE_ENV === 'development',
             schema: await buildSchema({
-                resolvers: [TaskResolver],
+                resolvers: [UserResolver],
                 validate: false
             })
         });
@@ -28,6 +28,10 @@ const conf_app = async (app: Express) => {
         apolloServer.applyMiddleware({ app });
 
         // Setup handles
+        app.use(
+            '/graphql',
+            express.json()
+        )
         app.use(notFound);
         app.use(errorHandler);
 
