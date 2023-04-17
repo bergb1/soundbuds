@@ -1,5 +1,4 @@
 require('dotenv').config();
-import 'reflect-metadata';
 import app from './app';
 
 // Get/Set the listening port
