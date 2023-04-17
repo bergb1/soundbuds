@@ -9,9 +9,11 @@ interface User {
     profile_color?: string;
 }
 
-interface GraphQLUser extends Omit<User, 'role' | 'password'>, Document {}
+interface UserOutput extends Omit<User, 'role' | 'password'>, Document {}
 
-interface MongoUser extends User, Document {}
+interface UserDatabase extends User, Document {}
+
+interface UserTest extends Partial<UserDatabase> {};
 
 interface UserIdWithToken {
     _id: string;
@@ -19,4 +21,4 @@ interface UserIdWithToken {
     role: 'admin' | 'user';
 }
 
-export { User, GraphQLUser, MongoUser, UserIdWithToken }
+export { User, UserOutput, UserDatabase, UserTest, UserIdWithToken }
