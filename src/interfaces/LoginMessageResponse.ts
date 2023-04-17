@@ -1,7 +1,7 @@
-import { User } from './User';
+import { GraphQLUser } from './User';
 
 export default interface LoginMessageResponse {
     token?: string;
     message: string;
-    user: User;
+    user: GraphQLUser;
 }

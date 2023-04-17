@@ -9,7 +9,7 @@ interface User {
     profile_color?: string;
 }
 
-interface GraphQLUser extends Omit<User, 'role'>, Document {}
+interface GraphQLUser extends Omit<User, 'role' | 'password'>, Document {}
 
 interface MongoUser extends User, Document {}
 

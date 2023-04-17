@@ -34,3 +34,7 @@ input UserModify {
 type Query {
     users: [User]
 }
+
+type Mutation {
+    register(user: UserInput!): TokenMessage
+}
