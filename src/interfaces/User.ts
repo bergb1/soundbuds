@@ -1,11 +1,17 @@
 import { Document } from "mongoose";
 
-interface User extends Document {
+interface User {
     user_name: string;
-    nick_name?: string;
     email: string;
+    password: string;
+    role: 'admin' | 'user';
+    nick_name?: string;
     profile_color?: string;
 }
+
+interface GraphQLUser extends Omit<User, 'role'>, Document {}
+
+interface MongoUser extends User, Document {}
 
 interface UserIdWithToken {
     _id: string;
@@ -13,4 +19,4 @@ interface UserIdWithToken {
     role: 'admin' | 'user';
 }
 
-export { User, UserIdWithToken }
+export { User, GraphQLUser, MongoUser, UserIdWithToken }
