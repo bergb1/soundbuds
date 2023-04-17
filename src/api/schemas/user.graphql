@@ -1,0 +1,36 @@
+type User {
+    id: ID!
+    user_name: String!
+    nick_name: String
+    email: String!
+    profile_color: String
+}
+
+type TokenMessage {
+    token: String
+    message: String!
+    user: User!
+}
+
+input Credentials {
+    email: String!
+    password: String!
+}
+
+input UserInput {
+    user_name: String!
+    email: String!
+    password: String!
+}
+
+input UserModify {
+    user_name: String
+    nick_name: String
+    email: String
+    profile_color: String
+    password: String
+}
+
+type Query {
+    users: [User]
+}
