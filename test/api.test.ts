@@ -21,6 +21,15 @@ describe('Testing graphql api', () => {
 
     let testUserData: LoginMessageResponse;
 
+    // Creator for testing
+    let testCreator: UserTest = {
+        username: 'Test Creator ' + randomstring.generate(7),
+        email: randomstring.generate(9) + '@creator.fi',
+        password: 'testpassword'
+    };
+
+    let testCreatorData: LoginMessageResponse;
+
     // Admin user for testing with illegal self-assigned role
     let testAdmin: UserTest = {
         username: 'Test Admin ' + randomstring.generate(7),
@@ -39,7 +48,12 @@ describe('Testing graphql api', () => {
         testUser._id = (await registerUser(app, testUser)).user._id;
     });
 
-    // User register
+    // Creator register
+    it('should register a user', async () => {
+        testCreator._id = (await registerUser(app, testCreator)).user._id;
+    });
+
+    // Admin register
     it('should register a user', async () => {
         testAdmin._id = (await registerUser(app, testAdmin)).user._id;
         let actualUser = await userModel.findById(testAdmin._id);
@@ -79,6 +93,20 @@ describe('Testing graphql api', () => {
     // Admin login
     it('should login a user', async () => {
         testAdminData = await loginUser(app, testAdmin);
+    });
+
+    // Assign the creator role to creator
+    it('should elevate a user to a creator', async () => {
+        await elevateUser(app, testCreator._id!, 'creator', testAdminData.token!);
+        let actualUser = await userModel.findById(testCreator._id);
+        if(actualUser?.role != 'creator') {
+            throw new Error('User was not elevated');
+        }
+    });
+
+    // Creator login
+    it('should login a creator', async () => {
+        testCreatorData = await loginUser(app, testCreator);
     });
 
     // Test escalation with wrong priviledge
