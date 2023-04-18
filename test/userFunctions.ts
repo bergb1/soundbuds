@@ -151,4 +151,49 @@ const elevateUser = (
     });
 }
 
-export { registerUser, loginUser, elevateUser }
+const failElevateUser = (
+    url: string | Function,
+    _id: string, role: string, token: string
+): Promise<LoginMessageResponse> => {
+    return new Promise((resolve, reject) => {
+        request(url)
+            .post('/graphql')
+            .set('Content-type', 'application/json')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+                query: 
+                    `mutation elevatePriviledges($_id: ID!, $role: String!) {
+                        elevatePriviledges(_id: $_id, role: $role) {
+                            message
+                            token
+                            user {
+                                _id
+                                username
+                                email
+                                nickname
+                                profile_color
+                            }
+                        }
+                    }`
+                , variables: {
+                    role: role,
+                    _id: _id
+                }
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.elevatePriviledges;
+                    if(!resp) {
+                        resolve(resp);
+                    } else {
+                        reject(resp);
+                    }
+                }
+            });
+    });
+}
+
+
+export { registerUser, loginUser, elevateUser, failElevateUser }
