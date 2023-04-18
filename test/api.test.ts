@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import randomstring from 'randomstring';
 import { getNotFound } from './testFunctions';
-import { User, UserTest } from '../src/interfaces/User';
+import { UserTest } from '../src/interfaces/User';
 import { loginUser, registerUser } from './userFunctions';
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 
@@ -32,6 +32,7 @@ describe('Testing graphql api', () => {
         password: 'testpassword',
     };
 
+    let rootuserData: LoginMessageResponse;
     let testUserData: LoginMessageResponse;
 
     // Test register
@@ -39,7 +40,16 @@ describe('Testing graphql api', () => {
         await registerUser(app, testUser);
     });
 
-    // Test login
+    // Root login
+    it('should login the root', async () => {
+        rootuserData = await loginUser(app, {
+            username: 'root',
+            email: process.env.ROOT_EMAIL as string,
+            password: process.env.ROOT_PWD as string
+        });
+    });
+
+    // User login
     it('should login a user', async () => {
         testUserData = await loginUser(app, testUser);
     });

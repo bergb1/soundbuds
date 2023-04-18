@@ -5,8 +5,7 @@ import Credentials from '../../interfaces/Credentials';
 import userModel from '../models/userModel';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-
-const salt = bcrypt.genSaltSync(12);
+import { salt } from '../..';
 
 export default {
     Query: {
