@@ -8,37 +8,13 @@ import { loginUser, registerUser } from './userFunctions';
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 
 describe('Testing graphql api', () => {
-    beforeAll(async () => {
-        // Configure the environment
-        dotenv.config();
-
-        // Start a database connection before testing
-        await mongoose.connect(process.env.DATABASE_URL as string);
-    });
-
-    // Close the database connection afterwards
-    afterAll(async () => {
-        await mongoose.connection.close();
-    });
-
     // Test not found
     it('should responds with a not found message', async () => {
         await getNotFound(app);
     });
 
-    const testUser: UserTest = {
-        username: 'Test User ' + randomstring.generate(7),
-        email: randomstring.generate(9) + '@user.fi',
-        password: 'testpassword',
-    };
-
+    // Root login information
     let rootuserData: LoginMessageResponse;
-    let testUserData: LoginMessageResponse;
-
-    // Test register
-    it('should register a user', async () => {
-        await registerUser(app, testUser);
-    });
 
     // Root login
     it('should login the root', async () => {
@@ -49,8 +25,23 @@ describe('Testing graphql api', () => {
         });
     });
 
+    // Regular user for testing
+    const testUser1: UserTest = {
+        username: 'Test User ' + randomstring.generate(7),
+        email: randomstring.generate(9) + '@user.fi',
+        password: 'testpassword',
+    };
+
+    // User register
+    it('should register a user', async () => {
+        await registerUser(app, testUser1);
+    });
+
+    // Regular user login information
+    let testUser1Data: LoginMessageResponse;
+
     // User login
     it('should login a user', async () => {
-        testUserData = await loginUser(app, testUser);
+        testUser1Data = await loginUser(app, testUser1);
     });
 });
