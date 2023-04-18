@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql';
 import LoginMessageResponse from '../../interfaces/LoginMessageResponse';
-import { User, UserIdWithToken, UserOutput } from '../../interfaces/User';
+import { UserRegister } from '../../interfaces/User';
 import Credentials from '../../interfaces/Credentials';
 import userModel from '../models/userModel';
 import bcrypt from 'bcryptjs';
@@ -19,7 +19,7 @@ export default {
     Mutation: {
         register: async (
             _parent: unknown,
-            args: {user: User}
+            args: {user: UserRegister}
         ) => {
             // Encrypt the password
             args.user.password = await bcrypt.hash(args.user.password, salt);
@@ -31,7 +31,7 @@ export default {
             if (!newUser) {
                 throw new GraphQLError('User not created');
             }
-
+            
             // Manage the response
             const resp: LoginMessageResponse = {
                 message: 'user created',
@@ -44,19 +44,19 @@ export default {
             args: {credentials: Credentials}
         ) => {
             // Check if the user exists
-            const user = await userModel.findOne({email: args.credentials.email});
+            const user = await userModel.findOne({username: args.credentials.username});
             if (!user) {
-                throw new GraphQLError('Email/Password incorrect');
+                throw new GraphQLError('Username/Password incorrect');
             }
 
             // Check if the password matches
             if (!bcrypt.compareSync(args.credentials.password, user.password)) {
-                throw new GraphQLError('Email/Password incorrect');
+                throw new GraphQLError('Username/Password incorrect');
             }
 
             // Make a token
             const token = jwt.sign(
-                {id: user._id, role: user.role},
+                {_id: user._id, role: user.role},
                 process.env.JWT_SECRET as string
             );
 

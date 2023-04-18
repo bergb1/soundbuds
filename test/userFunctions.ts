@@ -19,7 +19,7 @@ const registerUser = (
                         register(user: $user) {
                             message
                             user {
-                                id
+                                _id
                                 username
                                 email
                                 nickname
@@ -39,16 +39,16 @@ const registerUser = (
                 if (err) {
                     reject(err);
                 } else {
-                    const userData = response.body.data.register;
-                    expect(userData).toHaveProperty('message');
-                    expect(userData).toHaveProperty('user');
-                    expect(userData.user).toHaveProperty('id');
-                    expect(userData.user.username).toBe(user.username);
-                    expect(userData.user.email).toBe(user.email);
-                    expect(userData.user).not.toHaveProperty('password');
-                    expect(userData.user).not.toHaveProperty('role');
-                    expect(userData.user.profile_color).toBe('cyan');
-                    resolve(response.body.data.register);
+                    const resp = response.body.data.register;
+                    expect(resp).toHaveProperty('message');
+                    expect(resp).toHaveProperty('user');
+                    expect(resp.user).toHaveProperty('_id');
+                    expect(resp.user.username).toBe(user.username);
+                    expect(resp.user.email).toBe(user.email);
+                    expect(resp.user).not.toHaveProperty('password');
+                    expect(resp.user).not.toHaveProperty('role');
+                    expect(resp.user.profile_color).toBe('cyan');
+                    resolve(resp);
                 }
             });
     });
@@ -70,7 +70,7 @@ const loginUser = (
                             message
                             token
                             user {
-                                id
+                                _id
                                 username
                                 email
                                 nickname
@@ -80,7 +80,7 @@ const loginUser = (
                     }`
                 , variables: {
                     credentials: {
-                        email: user.email,
+                        username: user.username,
                         password: user.password
                     }
                 }
@@ -89,14 +89,14 @@ const loginUser = (
                 if (err) {
                     reject(err);
                 } else {
-                    const userData = response.body.data.login;
-                    expect(userData).toHaveProperty('message');
-                    expect(userData).toHaveProperty('token');
-                    expect(userData).toHaveProperty('user');
-                    expect(userData.user).toHaveProperty('id');
-                    expect(userData.user).not.toHaveProperty('password');
-                    expect(userData.user.email).toBe(user.email);
-                    resolve(response.body.data.login);
+                    const resp = response.body.data.login;
+                    expect(resp).toHaveProperty('message');
+                    expect(resp).toHaveProperty('token');
+                    expect(resp).toHaveProperty('user');
+                    expect(resp.user).toHaveProperty('_id');
+                    expect(resp.user).not.toHaveProperty('password');
+                    expect(resp.user.email).toBe(user.email);
+                    resolve(resp);
                 }
             });
     });

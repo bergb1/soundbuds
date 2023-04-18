@@ -5,7 +5,7 @@ const userModel = new mongoose.Schema<UserDatabase>({
     username: {
         type: String,
         required: true,
-        unique: false
+        unique: true
     },
     email: {
         type: String,
@@ -14,8 +14,7 @@ const userModel = new mongoose.Schema<UserDatabase>({
     },
     password: {
         type: String,
-        required: true,
-        unique: false
+        required: true
     },
     role: {
         type: String,
@@ -23,27 +22,19 @@ const userModel = new mongoose.Schema<UserDatabase>({
         default: 'user'
     },
     nickname: {
-        type: String,
-        required: false,
-        unique: false
+        type: String
     },
     profile_color: {
         type: String,
-        required: false,
-        unique: false,
         default: 'cyan'
     },
     song_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Song',
-        required: false,
-        unique: false
+        ref: 'Song'
     },
     album_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Album',
-        required: false,
-        unique: false
+        ref: 'Album'
     }
 });
 

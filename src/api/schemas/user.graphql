@@ -1,5 +1,5 @@
 type User {
-    id: ID!
+    _id: ID!
     username: String!
     email: String!
     nickname: String
@@ -13,7 +13,7 @@ type TokenMessage {
 }
 
 input Credentials {
-    email: String!
+    username: String!
     password: String!
 }
 
@@ -25,10 +25,10 @@ input UserInput {
 
 input UserModify {
     username: String
-    nickname: String
     email: String
-    profile_color: String
     password: String
+    nickname: String
+    profile_color: String
 }
 
 type Query {

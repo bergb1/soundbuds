@@ -1,26 +1,35 @@
 import { Document, Types } from "mongoose";
 
+// Regular User interface
 interface User {
     username: string;
     email: string;
     password: string;
-    role: 'admin' | 'user';
+    role: 'admin' | 'creator' | 'user';
     nickname?: string;
-    profile_color?: string;
+    profile_color: string;
     song_id?: Types.ObjectId;
     album_id?: Types.ObjectId;
 }
 
-interface UserOutput extends Omit<User, 'role' | 'password'>, Document {}
+// User interface with optional fields for testing
+interface UserTest extends Partial<User> {};
 
-interface UserDatabase extends User, Document {}
+// User for database interactions
+interface UserDatabase extends User, Document {};
 
-interface UserTest extends Partial<UserDatabase> {};
-
-interface UserIdWithToken {
-    id: string;
-    token: string;
-    role: 'admin' | 'user';
+// Input User for registering
+interface UserRegister {
+    username: string;
+    email: string;
+    password: string;
 }
 
-export { User, UserOutput, UserDatabase, UserTest, UserIdWithToken }
+// Output interface for Users
+interface UserIdWithToken {
+    _id: string;
+    token: string;
+    role: 'admin' | 'creator' | 'user';
+}
+
+export { User, UserRegister, UserDatabase, UserTest, UserIdWithToken }
