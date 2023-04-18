@@ -1,7 +1,7 @@
-import { UserOutput } from './User';
+import { UserDatabase } from './User';
 
 export default interface LoginMessageResponse {
     token?: string;
     message: string;
-    user: UserOutput;
+    user: UserDatabase;
 }

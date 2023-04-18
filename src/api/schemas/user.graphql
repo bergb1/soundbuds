@@ -24,16 +24,6 @@ input UserInput {
     password: String!
 }
 
-input AdminModify {
-    username: String
-    email: String
-    password: String
-    role: String
-    nickname: String
-    profile_color: String
-    favorite_song: ID
-}
-
 type Query {
     users: [User]
 }
@@ -41,5 +31,5 @@ type Query {
 type Mutation {
     register(user: UserInput!): TokenMessage
     login(credentials: Credentials!): TokenMessage
-    adminUpdate(user: AdminModify!): TokenMessage
+    elevatePriviledges(_id: ID!, role: String!): TokenMessage
 }

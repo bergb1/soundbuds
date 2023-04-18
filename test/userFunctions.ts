@@ -1,8 +1,10 @@
 import request from 'supertest';
 import expect from 'expect';
 import {UserTest} from '../src/interfaces/User';
-import randomstring from 'randomstring';
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
+
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Should register a user
 const registerUser = (
@@ -95,6 +97,7 @@ const loginUser = (
                     expect(resp).toHaveProperty('user');
                     expect(resp.user).toHaveProperty('_id');
                     expect(resp.user).not.toHaveProperty('password');
+                    expect(resp.user).not.toHaveProperty('role');
                     expect(resp.user.email).toBe(user.email);
                     resolve(resp);
                 }
@@ -102,4 +105,50 @@ const loginUser = (
     });
 };
 
-export { registerUser, loginUser }
+const elevateUser = (
+    url: string | Function,
+    _id: string, role: string, token: string
+): Promise<LoginMessageResponse> => {
+    return new Promise((resolve, reject) => {
+        request(url)
+            .post('/graphql')
+            .set('Content-type', 'application/json')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+                query: 
+                    `mutation elevatePriviledges($_id: ID!, $role: String!) {
+                        elevatePriviledges(_id: $_id, role: $role) {
+                            message
+                            token
+                            user {
+                                _id
+                                username
+                                email
+                                nickname
+                                profile_color
+                            }
+                        }
+                    }`
+                , variables: {
+                    role: role,
+                    _id: _id
+                }
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.elevatePriviledges;
+                    expect(resp).toHaveProperty('message');
+                    expect(resp).toHaveProperty('token');
+                    expect(resp).toHaveProperty('user');
+                    expect(resp.user).toHaveProperty('_id');
+                    expect(resp.user).not.toHaveProperty('password');
+                    expect(resp.user).not.toHaveProperty('role');
+                    resolve(resp);
+                }
+            });
+    });
+}
+
+export { registerUser, loginUser, elevateUser }

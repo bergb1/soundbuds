@@ -13,7 +13,9 @@ interface User {
 }
 
 // User interface with optional fields for testing
-interface UserTest extends Partial<User> {}
+interface UserTest extends Partial<User> {
+    _id?: string;
+}
 
 // User for database interactions
 interface UserDatabase extends User, Document {}

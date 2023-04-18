@@ -1,11 +1,10 @@
 import app from '../src/app';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
 import randomstring from 'randomstring';
 import { getNotFound } from './testFunctions';
 import { UserTest } from '../src/interfaces/User';
-import { loginUser, registerUser } from './userFunctions';
+import { elevateUser, loginUser, registerUser } from './userFunctions';
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
+import userModel from '../src/api/models/userModel';
 
 describe('Testing graphql api', () => {
     // Test not found
@@ -14,11 +13,11 @@ describe('Testing graphql api', () => {
     });
 
     // Root login information
-    let rootuserData: LoginMessageResponse;
+    let rootUserData: LoginMessageResponse;
 
     // Root login
     it('should login the root', async () => {
-        rootuserData = await loginUser(app, {
+        rootUserData = await loginUser(app, {
             username: 'root',
             email: process.env.ROOT_EMAIL as string,
             password: process.env.ROOT_PWD as string
@@ -26,22 +25,44 @@ describe('Testing graphql api', () => {
     });
 
     // Regular user for testing
-    const testUser1: UserTest = {
+    let testUser: UserTest = {
         username: 'Test User ' + randomstring.generate(7),
         email: randomstring.generate(9) + '@user.fi',
-        password: 'testpassword',
+        password: 'testpassword'
     };
 
     // User register
     it('should register a user', async () => {
-        await registerUser(app, testUser1);
+        testUser._id = (await registerUser(app, testUser)).user._id;
     });
 
     // Regular user login information
-    let testUser1Data: LoginMessageResponse;
+    let testUserData: LoginMessageResponse;
 
     // User login
     it('should login a user', async () => {
-        testUser1Data = await loginUser(app, testUser1);
+        testUserData = await loginUser(app, testUser);
+    });
+
+    // Admin user for testing with illegal self-assigned role
+    let testAdmin: UserTest = {
+        username: 'Test Admin ' + randomstring.generate(7),
+        email: randomstring.generate(9) + '@admin.fi',
+        password: 'testpassword',
+        role: 'admin'
+    };
+
+    // User register
+    it('should register a user', async () => {
+        testAdmin._id = (await registerUser(app, testAdmin)).user._id;
+    });
+
+    // Assign the admin role to the admin
+    it('should elevate the user to an admin', async () => {
+        await elevateUser(app, testAdmin._id!, 'admin', rootUserData.token!);
+        let actualUser = await userModel.findById(testAdmin._id);
+        if(actualUser?.role != 'admin') {
+            throw new Error('User was not elevated');
+        }
     });
 });

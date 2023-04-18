@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql';
 import LoginMessageResponse from '../../interfaces/LoginMessageResponse';
-import { User } from '../../interfaces/User';
+import { User, UserDatabase, UserIdWithToken } from '../../interfaces/User';
 import Credentials from '../../interfaces/Credentials';
 import userModel from '../models/userModel';
 import bcrypt from 'bcryptjs';
@@ -64,6 +64,50 @@ export default {
                 message: 'Login successful',
                 token: token,
                 user: user
+            };
+            return message;
+        },
+        elevatePriviledges: async (
+            _parent: unknown,
+            args: { _id: string, role: string },
+            user: UserIdWithToken
+        ) => {
+
+            if (!user.token) {
+                throw new GraphQLError('Not logged in');
+            }
+
+            // Permission check
+            const authorized = ['admin', 'root'];
+            const userAuth = authorized.indexOf(user.role);
+
+            // Fetch the target user
+            const target = await userModel.findById(args._id);
+            if(!target) {
+                throw new GraphQLError('user not found');
+            }
+            let targetAuth = authorized.indexOf(target.role);
+
+            // Check the role auth level
+            const roleAuth = authorized.indexOf(args.role);
+
+            // Compare the auth
+            if (userAuth <= targetAuth || userAuth <= roleAuth) {
+                throw new GraphQLError('request not authorized');
+            }
+
+            // Execute the request
+            const updatedUser = await userModel.findByIdAndUpdate(args._id, args, { new: true });
+
+            // Validate the response
+            if (!updatedUser) {
+                throw new GraphQLError('user not updated');
+            }
+
+            // Manage the response
+            const message: LoginMessageResponse = {
+                message: 'user role changed',
+                user: updatedUser
             };
             return message;
         }
