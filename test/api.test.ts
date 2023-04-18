@@ -3,8 +3,9 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import randomstring from 'randomstring';
 import { getNotFound } from './testFunctions';
-import { UserTest } from '../src/interfaces/User';
-import { registerUser } from './userFunctions';
+import { User, UserTest } from '../src/interfaces/User';
+import { loginUser, registerUser } from './userFunctions';
+import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 
 describe('Testing graphql api', () => {
     beforeAll(async () => {
@@ -26,13 +27,20 @@ describe('Testing graphql api', () => {
     });
 
     const testUser: UserTest = {
-        user_name: 'Test User ' + randomstring.generate(7),
+        username: 'Test User ' + randomstring.generate(7),
         email: randomstring.generate(9) + '@user.fi',
         password: 'testpassword',
     };
 
-    // test register
+    let testUserData: LoginMessageResponse;
+
+    // Test register
     it('should register a user', async () => {
         await registerUser(app, testUser);
+    });
+
+    // Test login
+    it('should login a user', async () => {
+        testUserData = await loginUser(app, testUser);
     });
 });

@@ -2,14 +2,9 @@ import mongoose from 'mongoose';
 import { UserDatabase } from '../../interfaces/User';
 
 const userModel = new mongoose.Schema<UserDatabase>({
-    user_name: {
+    username: {
         type: String,
         required: true,
-        unique: false
-    },
-    nick_name: {
-        type: String,
-        required: false,
         unique: false
     },
     email: {
@@ -27,11 +22,28 @@ const userModel = new mongoose.Schema<UserDatabase>({
         enum: ['user', 'admin'],
         default: 'user'
     },
+    nickname: {
+        type: String,
+        required: false,
+        unique: false
+    },
     profile_color: {
         type: String,
         required: false,
         unique: false,
         default: 'cyan'
+    },
+    song_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Song',
+        required: false,
+        unique: false
+    },
+    album_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Album',
+        required: false,
+        unique: false
     }
 });
 

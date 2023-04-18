@@ -1,8 +1,8 @@
 type User {
     id: ID!
-    user_name: String!
+    username: String!
     email: String!
-    nick_name: String
+    nickname: String
     profile_color: String
 }
 
@@ -18,14 +18,14 @@ input Credentials {
 }
 
 input UserInput {
-    user_name: String!
+    username: String!
     email: String!
     password: String!
 }
 
 input UserModify {
-    user_name: String
-    nick_name: String
+    username: String
+    nickname: String
     email: String
     profile_color: String
     password: String
@@ -37,4 +37,5 @@ type Query {
 
 type Mutation {
     register(user: UserInput!): TokenMessage
+    login(credentials: Credentials!): TokenMessage
 }

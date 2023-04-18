@@ -1,9 +1,10 @@
 import { GraphQLError } from 'graphql';
 import LoginMessageResponse from '../../interfaces/LoginMessageResponse';
-import { User, UserIdWithToken } from '../../interfaces/User';
+import { User, UserIdWithToken, UserOutput } from '../../interfaces/User';
 import Credentials from '../../interfaces/Credentials';
 import userModel from '../models/userModel';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 const salt = bcrypt.genSaltSync(12);
 
@@ -37,6 +38,35 @@ export default {
                 user: newUser
             }
             return resp;
+        },
+        login: async (
+            _parent: unknown,
+            args: {credentials: Credentials}
+        ) => {
+            // Check if the user exists
+            const user = await userModel.findOne({email: args.credentials.email});
+            if (!user) {
+                throw new GraphQLError('Email/Password incorrect');
+            }
+
+            // Check if the password matches
+            if (!bcrypt.compareSync(args.credentials.password, user.password)) {
+                throw new GraphQLError('Email/Password incorrect');
+            }
+
+            // Make a token
+            const token = jwt.sign(
+                {id: user._id, role: user.role},
+                process.env.JWT_SECRET as string
+            );
+
+            // Manage the response
+            const message: LoginMessageResponse = {
+                message: 'Login successful',
+                token: token,
+                user: user
+            };
+            return message;
         }
     }
 };
