@@ -1,0 +1,11 @@
+type Song {
+    _id: ID!
+    song_name: String!
+    cover: String!
+    description: String!
+    creator: User!
+}
+
+type Query {
+    songs: [Song]
+}

@@ -8,8 +8,8 @@ interface User {
     role: 'admin' | 'creator' | 'user';
     nickname?: string;
     profile_color: string;
-    song_id?: Types.ObjectId;
-    album_id?: Types.ObjectId;
+    favorite_song?: Types.ObjectId;
+    favorite_album?: Types.ObjectId;
 }
 
 // User interface with optional fields for testing

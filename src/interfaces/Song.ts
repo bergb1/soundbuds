@@ -4,9 +4,9 @@ import { Document, Types } from "mongoose";
 interface Song {
     song_name: string;
     cover: string;
-    genre: string;
-    user_id: Types.ObjectId;
-    album_id?: Types.ObjectId;
+    description: string;
+    creator: Types.ObjectId;
+    album?: Types.ObjectId;
 }
 
 // Song interface with optional fields for testing

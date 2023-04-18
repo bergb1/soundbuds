@@ -4,6 +4,7 @@ type User {
     email: String!
     nickname: String
     profile_color: String
+    favorite_song: Song
 }
 
 type TokenMessage {

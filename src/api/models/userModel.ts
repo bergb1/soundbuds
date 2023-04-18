@@ -18,7 +18,7 @@ const userModel = new mongoose.Schema<UserDatabase>({
     },
     role: {
         type: String,
-        enum: ['user', 'admin'],
+        enum: ['user', 'creator', 'admin'],
         default: 'user'
     },
     nickname: {
@@ -28,11 +28,11 @@ const userModel = new mongoose.Schema<UserDatabase>({
         type: String,
         default: 'cyan'
     },
-    song_id: {
+    favorite_song: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Song'
     },
-    album_id: {
+    favorite_album: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Album'
     }
