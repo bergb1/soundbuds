@@ -18,7 +18,7 @@ const userModel = new mongoose.Schema<UserDatabase>({
     },
     role: {
         type: String,
-        enum: ['user', 'creator', 'admin'],
+        enum: ['user', 'creator', 'admin', 'root'],
         default: 'user'
     },
     nickname: {

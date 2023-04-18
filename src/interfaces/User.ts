@@ -5,7 +5,7 @@ interface User {
     username: string;
     email: string;
     password: string;
-    role: 'admin' | 'creator' | 'user';
+    role: 'admin' | 'creator' | 'user' | 'root';
     nickname?: string;
     profile_color: string;
     favorite_song?: Types.ObjectId;
@@ -22,7 +22,7 @@ interface UserDatabase extends User, Document {}
 interface UserIdWithToken {
     _id: string;
     token: string;
-    role: 'admin' | 'creator' | 'user';
+    role: 'admin' | 'creator' | 'user' | 'root';
 }
 
 export { User, UserDatabase, UserTest, UserIdWithToken }

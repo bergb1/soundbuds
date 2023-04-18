@@ -6,7 +6,7 @@ export default async (req: Request) => {
   const bearer = req.headers.authorization;
   if (!bearer) {
     return {
-      id: '',
+      _id: '',
       token: '',
       role: '',
     };
@@ -16,7 +16,7 @@ export default async (req: Request) => {
 
   if (!token) {
     return {
-      id: '',
+      _id: '',
       token: '',
       role: '',
     };
@@ -29,7 +29,7 @@ export default async (req: Request) => {
 
   if (!userFromToken) {
     return {
-      id: '',
+      _id: '',
       token: '',
       role: '',
     };
