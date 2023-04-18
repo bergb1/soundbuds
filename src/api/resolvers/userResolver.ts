@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql';
 import LoginMessageResponse from '../../interfaces/LoginMessageResponse';
-import { UserRegister } from '../../interfaces/User';
+import { User } from '../../interfaces/User';
 import Credentials from '../../interfaces/Credentials';
 import userModel from '../models/userModel';
 import bcrypt from 'bcryptjs';
@@ -19,7 +19,7 @@ export default {
     Mutation: {
         register: async (
             _parent: unknown,
-            args: {user: UserRegister}
+            args: {user: User}
         ) => {
             // Encrypt the password
             args.user.password = await bcrypt.hash(args.user.password, salt);

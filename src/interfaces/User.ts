@@ -13,17 +13,10 @@ interface User {
 }
 
 // User interface with optional fields for testing
-interface UserTest extends Partial<User> {};
+interface UserTest extends Partial<User> {}
 
 // User for database interactions
-interface UserDatabase extends User, Document {};
-
-// Input User for registering
-interface UserRegister {
-    username: string;
-    email: string;
-    password: string;
-}
+interface UserDatabase extends User, Document {}
 
 // Output interface for Users
 interface UserIdWithToken {
@@ -32,4 +25,4 @@ interface UserIdWithToken {
     role: 'admin' | 'creator' | 'user';
 }
 
-export { User, UserRegister, UserDatabase, UserTest, UserIdWithToken }
+export { User, UserDatabase, UserTest, UserIdWithToken }
