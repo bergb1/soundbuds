@@ -2,6 +2,7 @@ import request from 'supertest';
 import expect from 'expect';
 import {UserTest} from '../src/interfaces/User';
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
+import randomstring from 'randomstring';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -212,7 +213,6 @@ const updateNickname = (
                     reject(err);
                 } else {
                     const resp = response.body.data.userUpdate;
-                    console.log(resp);
                     expect(resp).toHaveProperty('message');
                     expect(resp).toHaveProperty('token');
                     expect(resp).toHaveProperty('user');
@@ -226,4 +226,51 @@ const updateNickname = (
     });
 }
 
-export { registerUser, loginUser, elevateUser, failElevateUser, updateNickname }
+const updateUsernameByID = (
+    url: string | Function,
+    id: string, token: string
+): Promise<LoginMessageResponse> => {
+    let username = 'Test Creator ' + randomstring.generate(7);
+    return new Promise((resolve, reject) => {
+        request(url)
+            .post('/graphql')
+            .set('Content-type', 'application/json')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+                query: 
+                    `mutation userUpdateByID($id: ID!, $user: AdminModify!) {
+                        userUpdateByID(_id: $id, user: $user) {
+                            message
+                            token
+                            user {
+                                _id
+                                username
+                            }
+                        }
+                    }`
+                , variables: {
+                    id: id,
+                    user: {
+                        username: username
+                    }
+                }
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.userUpdateByID;
+                    expect(resp).toHaveProperty('message');
+                    expect(resp).toHaveProperty('token');
+                    expect(resp).toHaveProperty('user');
+                    expect(resp.user).toHaveProperty('_id');
+                    expect(resp.user).not.toHaveProperty('password');
+                    expect(resp.user).not.toHaveProperty('role');
+                    expect(resp.user.username).toBe(username);
+                    resolve(resp);
+                }
+            });
+    });
+}
+
+export { registerUser, loginUser, elevateUser, failElevateUser, updateNickname, updateUsernameByID }
