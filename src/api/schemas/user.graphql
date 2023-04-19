@@ -55,4 +55,5 @@ type Mutation {
     userUpdateByID(_id: ID!, user: AdminModify!): TokenMessage
     userChangeRole(_id: ID!, role: String!): TokenMessage
     userDelete: TokenMessage
+    userDeleteByID(_id: ID!): TokenMessage
 }
