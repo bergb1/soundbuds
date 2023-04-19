@@ -24,6 +24,13 @@ input UserInput {
     password: String!
 }
 
+input UserModify {
+    email: String
+    nickname: String
+    profile_color: String
+    favorite_song: Song
+}
+
 type Query {
     users: [User]
 }
@@ -32,4 +39,5 @@ type Mutation {
     register(user: UserInput!): TokenMessage
     login(credentials: Credentials!): TokenMessage
     elevatePriviledges(_id: ID!, role: String!): TokenMessage
+    userUpdate(user: UserModify): TokenMessage
 }

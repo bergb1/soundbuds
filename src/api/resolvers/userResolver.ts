@@ -53,10 +53,11 @@ export default {
                 throw new GraphQLError('Username/Password incorrect');
             }
 
-            // Make a token
-            const token = jwt.sign(
-                {_id: user._id, role: user.role},
-                process.env.JWT_SECRET as string
+            // Generate a token
+            const token = jwt.sign({
+                    _id: user._id, 
+                    role: user.role 
+                }, process.env.JWT_SECRET as string
             );
 
             // Manage the response
@@ -72,14 +73,16 @@ export default {
             args: { _id: string, role: string },
             user: UserIdWithToken
         ) => {
-
             if (!user.token) {
-                throw new GraphQLError('Not logged in');
+                throw new GraphQLError('not logged in');
             }
 
             // Permission check
             const authorized = ['admin', 'root'];
             const userAuth = authorized.indexOf(user.role);
+            if (userAuth === -1) {
+                throw new GraphQLError('request not authorized');
+            }
 
             // Fetch the target user
             const target = await userModel.findById(args._id);
@@ -110,6 +113,17 @@ export default {
                 user: updatedUser
             };
             return message;
+        },
+        userUpdate: async (
+            _parent: unknown,
+            args: { user: User },
+            user: UserIdWithToken
+        ) => {
+            if (!user.token) {
+                throw new GraphQLError('not logged in');
+            }
+
+            
         }
     }
 };

@@ -1,18 +1,17 @@
 import { Document, Types } from "mongoose";
 
-// Regular Song interface
-interface Song {
+// Regular Album interface
+interface Album {
     name: string;
     cover: string;
     description: string;
     creator: Types.ObjectId;
-    album?: Types.ObjectId;
 }
 
 // Song interface with optional fields for testing
-interface SongTest extends Partial<Song> {}
+interface AlbumTest extends Partial<Album> {}
 
 // Song for database interactions
-interface SongDatabase extends Song, Document {}
+interface AlbumDatabase extends Album, Document {}
 
-export { Song, SongTest, SongDatabase }
+export { Album, AlbumTest, AlbumDatabase }
