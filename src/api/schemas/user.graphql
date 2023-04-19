@@ -5,6 +5,7 @@ type User {
     nickname: String
     profile_color: String
     favorite_song: Song
+    favorite_album: Album
 }
 
 type TokenMessage {
@@ -26,9 +27,11 @@ input UserInput {
 
 input UserModify {
     email: String
+    password: String
     nickname: String
     profile_color: String
     favorite_song: Song
+    favorite_album: Album
 }
 
 type Query {
