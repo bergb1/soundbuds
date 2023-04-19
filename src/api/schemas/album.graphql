@@ -1,12 +1,11 @@
-type Song {
+type Album {
     _id: ID!
     name: String!
     cover: String!
     description: String
     creator: User!
-    album: Album
 }
 
 type Query {
-    songs: [Song]
+    songs: [Album]
 }
