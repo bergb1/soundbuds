@@ -220,6 +220,35 @@ export default {
                 user: deletedUser
             };
             return message;
+        },
+        userDeleteByID: async (
+            _parent: unknown,
+            args: {_id: string},
+            user: UserIdWithToken
+        ) => {
+            if (!user.token) {
+                throw new GraphQLError('not logged in');
+            }
+
+            // Compare the auth
+            if (!(await mayModify(user.role, args._id))) {
+                throw new GraphQLError('request not authorized');
+            }
+
+            // Execute the request
+            const deletedUser = await userModel.findByIdAndDelete(args._id);
+
+            // Validate the response
+            if (!deletedUser) {
+                throw new GraphQLError('user not deleted');
+            }
+
+            // Manage the response
+            const message: LoginMessageResponse = {
+                message: 'user deleted',
+                user: deletedUser
+            };
+            return message;
         }
     }
 };
