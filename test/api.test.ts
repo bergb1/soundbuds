@@ -2,7 +2,7 @@ import app from '../src/app';
 import randomstring from 'randomstring';
 import { getNotFound } from './testFunctions';
 import { UserTest } from '../src/interfaces/User';
-import { userDelete, userElevate, userFailElevate, userFailUpdateByID, userLogin, userRegister, userUpdate, userUpdateByID } from './userFunctions';
+import { userDelete, userDeleteByID, userElevate, userFailElevate, userFailUpdateByID, userLogin, userRegister, userUpdate, userUpdateByID } from './userFunctions';
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 import userModel from '../src/api/models/userModel';
 
@@ -127,5 +127,15 @@ describe('Testing graphql api', () => {
     // User delete
     it(`Should delete the user`, async () => {
         await userDelete(app, testUserData.token!);
+    });
+
+    // User delete by ID
+    it(`Should delete the creator as an admin`, async () => {
+        await userDeleteByID(app, testCreator._id!, testAdminData.token!);
+    });
+
+    // User delete by ID
+    it(`Should delete the admin as the root`, async () => {
+        await userDeleteByID(app, testAdmin._id!, rootUserData.token!);
     });
 });

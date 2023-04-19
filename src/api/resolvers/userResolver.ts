@@ -196,6 +196,30 @@ export default {
                 user: updatedUser
             };
             return message;
+        },
+        userDelete: async (
+            _parent: unknown,
+            _args: unknown,
+            user: UserIdWithToken
+        ) => {
+            if (!user.token) {
+                throw new GraphQLError('not logged in');
+            }
+
+            // Execute the request
+            const deletedUser = await userModel.findByIdAndDelete(user._id);
+
+            // Validate the response
+            if (!deletedUser) {
+                throw new GraphQLError('user not deleted');
+            }
+
+            // Manage the response
+            const message: LoginMessageResponse = {
+                message: 'user deleted',
+                user: deletedUser
+            };
+            return message;
         }
     }
 };

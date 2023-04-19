@@ -229,7 +229,7 @@ const userUpdate = (
 
 const userUpdateByID = (
     url: string | Function,
-    id: string, token: string
+    _id: string, token: string
 ): Promise<LoginMessageResponse> => {
     let username = 'Test Person ' + randomstring.generate(7);
     return new Promise((resolve, reject) => {
@@ -239,8 +239,8 @@ const userUpdateByID = (
             .set('Authorization', 'Bearer ' + token)
             .send({
                 query: 
-                    `mutation userUpdateByID($id: ID!, $user: AdminModify!) {
-                        userUpdateByID(_id: $id, user: $user) {
+                    `mutation userUpdateByID($_id: ID!, $user: AdminModify!) {
+                        userUpdateByID(_id: $_id, user: $user) {
                             message
                             token
                             user {
@@ -250,7 +250,7 @@ const userUpdateByID = (
                         }
                     }`
                 , variables: {
-                    id: id,
+                    _id: _id,
                     user: {
                         username: username
                     }
@@ -276,7 +276,7 @@ const userUpdateByID = (
 
 const userFailUpdateByID = (
     url: string | Function,
-    id: string, token: string
+    _id: string, token: string
 ): Promise<LoginMessageResponse> => {
     let username = 'Test Creator ' + randomstring.generate(7);
     return new Promise((resolve, reject) => {
@@ -286,8 +286,8 @@ const userFailUpdateByID = (
             .set('Authorization', 'Bearer ' + token)
             .send({
                 query: 
-                    `mutation userUpdateByID($id: ID!, $user: AdminModify!) {
-                        userUpdateByID(_id: $id, user: $user) {
+                    `mutation userUpdateByID($_id: ID!, $user: AdminModify!) {
+                        userUpdateByID(_id: $_id, user: $user) {
                             message
                             token
                             user {
@@ -297,7 +297,7 @@ const userFailUpdateByID = (
                         }
                     }`
                 , variables: {
-                    id: id,
+                    _id: _id,
                     user: {
                         username: username
                     }
@@ -335,7 +335,6 @@ const userDelete = (
                             }
                         }
                     }`
-                
             })
             .expect(200, (err, response) => {
                 if (err) {
@@ -352,4 +351,43 @@ const userDelete = (
     });
 }
 
-export { userRegister, userLogin, userElevate, userFailElevate, userUpdate, userUpdateByID, userFailUpdateByID, userDelete }
+const userDeleteByID = (
+    url: string | Function, 
+    _id: string, token: string
+): Promise<LoginMessageResponse> => {
+    return new Promise((resolve, reject) => {
+        request(url)
+            .post('/graphql')
+            .set('Content-type', 'application/json')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+                query: 
+                    `mutation userDeleteByID($_id: ID!) {
+                        userDeleteByID(_id: $_id) {
+                            message
+                            token
+                            user {
+                                _id
+                            }
+                        }
+                    }`
+                , variables: {
+                    _id: _id,
+                }
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.userDeleteByID;
+                    expect(resp).toHaveProperty('message');
+                    expect(resp).toHaveProperty('token');
+                    expect(resp).toHaveProperty('user');
+                    expect(resp.user).toHaveProperty('_id');
+                    resolve(resp);
+                }
+            });
+    });
+}
+
+export { userRegister, userLogin, userElevate, userFailElevate, userUpdate, userUpdateByID, userFailUpdateByID, userDelete, userDeleteByID }
