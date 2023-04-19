@@ -22,6 +22,11 @@ jobs:
           node-version: '18.x'
 
       - name: npm install, build, and test
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          ROOT_EMAIL: ${{ secrets.ROOT_EMAIL }}
+          ROOT_PWD: ${{ secrets.ROOT_PWD }}
         run: |
           npm install
           npm run build --if-present
