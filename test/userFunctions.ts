@@ -112,8 +112,8 @@ const elevateUser = (
             .set('Authorization', 'Bearer ' + token)
             .send({
                 query: 
-                    `mutation elevatePriviledges($_id: ID!, $role: String!) {
-                        elevatePriviledges(_id: $_id, role: $role) {
+                    `mutation userChangeRole($_id: ID!, $role: String!) {
+                        userChangeRole(_id: $_id, role: $role) {
                             message
                             user {
                                 _id
@@ -129,7 +129,7 @@ const elevateUser = (
                 if (err) {
                     reject(err);
                 } else {
-                    const resp = response.body.data.elevatePriviledges;
+                    const resp = response.body.data.userChangeRole;
                     expect(resp).toHaveProperty('message');
                     expect(resp).toHaveProperty('user');
                     expect(resp.user).toHaveProperty('_id');
@@ -152,8 +152,8 @@ const failElevateUser = (
             .set('Authorization', 'Bearer ' + token)
             .send({
                 query: 
-                    `mutation elevatePriviledges($_id: ID!, $role: String!) {
-                        elevatePriviledges(_id: $_id, role: $role) {
+                    `mutation userChangeRole($_id: ID!, $role: String!) {
+                        userChangeRole(_id: $_id, role: $role) {
                             message
                             user {
                                 _id
@@ -169,7 +169,7 @@ const failElevateUser = (
                 if (err) {
                     reject(err);
                 } else {
-                    const resp = response.body.data.elevatePriviledges;
+                    const resp = response.body.data.userChangeRole;
                     if(!resp) {
                         resolve(resp);
                     } else {

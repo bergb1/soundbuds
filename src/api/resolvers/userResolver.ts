@@ -9,6 +9,31 @@ import { salt } from '../..';
 import { Song } from '../../interfaces/Song';
 import { Album } from '../../interfaces/Album';
 
+// Function to check if user one may modify user two
+const mayModify = async (user_role: string, target_id: string, role?: string) => {
+    // Permission check
+    const authorized = ['admin', 'root'];
+    const userAuth = authorized.indexOf(user_role);
+    if (userAuth === -1) {
+        return false;
+    }
+
+    // Fetch the target user
+    const target = await userModel.findById(target_id);
+    if(!target) {
+        throw new GraphQLError('user not found');
+    }
+
+    // Compare the auth
+    if (userAuth <= authorized.indexOf(target.role)) {
+        return false;
+    } else if (role && userAuth <= authorized.indexOf(role)) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 export default {
     Song: {
         creator: async (parent: Song) => {
@@ -30,7 +55,7 @@ export default {
     Mutation: {
         register: async (
             _parent: unknown,
-            args: {user: UserDatabase}
+            args: {user: User}
         ) => {
             // Encrypt the password
             args.user.password = await bcrypt.hash(args.user.password, salt);
@@ -80,7 +105,70 @@ export default {
             };
             return message;
         },
-        elevatePriviledges: async (
+        userUpdate: async (
+            _parent: unknown,
+            args: { user: User },
+            user: UserIdWithToken
+        ) => {
+            if (!user.token) {
+                throw new GraphQLError('not logged in');
+            }
+
+            // Hash password changes
+            if (args.user.password) {
+                args.user.password = await bcrypt.hash(args.user.password, salt);
+            }
+
+            // Execute the request
+            const updatedUser = await userModel.findByIdAndUpdate(user._id, args.user, { new: true });
+
+            // Validate the response
+            if (!updatedUser) {
+                throw new GraphQLError('user not updated');
+            }
+
+            // Manage the response
+            const message: LoginMessageResponse = {
+                message: 'user updated',
+                user: updatedUser
+            };
+            return message;
+        },
+        userUpdateByID: async (
+            _parent: unknown,
+            args: { _id: string, user: User },
+            user: UserIdWithToken
+        ) => {
+            if (!user.token) {
+                throw new GraphQLError('not logged in');
+            }
+
+            // Compare the auth
+            if (!(await mayModify(user.role, args._id))) {
+                throw new GraphQLError('request not authorized');
+            }
+
+            // Hash password changes
+            if (args.user.password) {
+                args.user.password = await bcrypt.hash(args.user.password, salt);
+            }
+
+            // Execute the request
+            const updatedUser = await userModel.findByIdAndUpdate(args._id, args.user, { new: true });
+
+            // Validate the response
+            if (!updatedUser) {
+                throw new GraphQLError('user not updated');
+            }
+
+            // Manage the response
+            const message: LoginMessageResponse = {
+                message: 'user updated',
+                user: updatedUser
+            };
+            return message;
+        },
+        userChangeRole: async (
             _parent: unknown,
             args: { _id: string, role: string },
             user: UserIdWithToken
@@ -89,25 +177,8 @@ export default {
                 throw new GraphQLError('not logged in');
             }
 
-            // Permission check
-            const authorized = ['admin', 'root'];
-            const userAuth = authorized.indexOf(user.role);
-            if (userAuth === -1) {
-                throw new GraphQLError('request not authorized');
-            }
-
-            // Fetch the target user
-            const target = await userModel.findById(args._id);
-            if(!target) {
-                throw new GraphQLError('user not found');
-            }
-            let targetAuth = authorized.indexOf(target.role);
-
-            // Check the role auth level
-            const roleAuth = authorized.indexOf(args.role);
-
             // Compare the auth
-            if (userAuth <= targetAuth || userAuth <= roleAuth) {
+            if (!(await mayModify(user.role, args._id, args.role))) {
                 throw new GraphQLError('request not authorized');
             }
 
@@ -122,30 +193,6 @@ export default {
             // Manage the response
             const message: LoginMessageResponse = {
                 message: 'user role changed',
-                user: updatedUser
-            };
-            return message;
-        },
-        userUpdate: async (
-            _parent: unknown,
-            args: { user: UserDatabase },
-            user: UserIdWithToken
-        ) => {
-            if (!user.token) {
-                throw new GraphQLError('not logged in');
-            }
-
-            // Execute the request
-            const updatedUser = await userModel.findByIdAndUpdate(user._id, args.user, { new: true });
-
-            // Validate the response
-            if (!updatedUser) {
-                throw new GraphQLError('user not updated');
-            }
-
-            // Manage the response
-            const message: LoginMessageResponse = {
-                message: 'user updated',
                 user: updatedUser
             };
             return message;
