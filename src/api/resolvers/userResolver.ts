@@ -6,8 +6,20 @@ import userModel from '../models/userModel';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { salt } from '../..';
+import { Song } from '../../interfaces/Song';
+import { Album } from '../../interfaces/Album';
 
 export default {
+    Song: {
+        creator: async (parent: Song) => {
+            return await userModel.findById(parent.creator);
+        }
+    },
+    Album: {
+        creator: async (parent: Album) => {
+            return await userModel.findById(parent.creator);
+        }
+    },
     Query: {
         users: async () => {
             return await userModel
@@ -18,7 +30,7 @@ export default {
     Mutation: {
         register: async (
             _parent: unknown,
-            args: {user: User}
+            args: {user: UserDatabase}
         ) => {
             // Encrypt the password
             args.user.password = await bcrypt.hash(args.user.password, salt);
@@ -116,14 +128,27 @@ export default {
         },
         userUpdate: async (
             _parent: unknown,
-            args: { user: User },
+            args: { user: UserDatabase },
             user: UserIdWithToken
         ) => {
             if (!user.token) {
                 throw new GraphQLError('not logged in');
             }
 
-            
+            // Execute the request
+            const updatedUser = await userModel.findByIdAndUpdate(user._id, args.user, { new: true });
+
+            // Validate the response
+            if (!updatedUser) {
+                throw new GraphQLError('user not updated');
+            }
+
+            // Manage the response
+            const message: LoginMessageResponse = {
+                message: 'user updated',
+                user: updatedUser
+            };
+            return message;
         }
     }
 };

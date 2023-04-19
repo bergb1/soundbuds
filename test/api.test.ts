@@ -2,7 +2,7 @@ import app from '../src/app';
 import randomstring from 'randomstring';
 import { getNotFound } from './testFunctions';
 import { UserTest } from '../src/interfaces/User';
-import { elevateUser, loginUser, registerUser, failElevateUser } from './userFunctions';
+import { elevateUser, loginUser, registerUser, failElevateUser, updateNickname } from './userFunctions';
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 import userModel from '../src/api/models/userModel';
 
@@ -112,5 +112,10 @@ describe('Testing graphql api', () => {
     // Test escalation with wrong priviledge
     it(`shouldn't elevate the root to a user`, async () => {
         await failElevateUser(app, rootUserData.user._id, 'user', testAdminData.token!);
+    });
+
+    // Test update user
+    it(`Should update a user's nickname`, async () => {
+        await updateNickname(app, 'Test User', testUserData.token!);
     });
 });

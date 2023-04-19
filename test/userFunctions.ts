@@ -24,7 +24,6 @@ const registerUser = (
                                 _id
                                 username
                                 email
-                                nickname
                                 profile_color
                             }
                         }
@@ -45,10 +44,10 @@ const registerUser = (
                     expect(resp).toHaveProperty('message');
                     expect(resp).toHaveProperty('user');
                     expect(resp.user).toHaveProperty('_id');
-                    expect(resp.user.username).toBe(user.username);
-                    expect(resp.user.email).toBe(user.email);
                     expect(resp.user).not.toHaveProperty('password');
                     expect(resp.user).not.toHaveProperty('role');
+                    expect(resp.user.username).toBe(user.username);
+                    expect(resp.user.email).toBe(user.email);
                     expect(resp.user.profile_color).toBe('cyan');
                     resolve(resp);
                 }
@@ -56,7 +55,7 @@ const registerUser = (
     });
 };
 
-// Should register a user
+// Should login a user
 const loginUser = (
     url: string | Function,
     user: UserTest
@@ -195,5 +194,48 @@ const failElevateUser = (
     });
 }
 
+const updateNickname = (
+    url: string | Function,
+    nickname: string, token: string
+): Promise<LoginMessageResponse> => {
+    return new Promise((resolve, reject) => {
+        request(url)
+            .post('/graphql')
+            .set('Content-type', 'application/json')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+                query: 
+                    `mutation userUpdate($user: UserModify!) {
+                        userUpdate(user: $user) {
+                            message
+                            token
+                            user {
+                                _id
+                                username
+                                email
+                                nickname
+                            }
+                        }
+                    }`
+                , variables: {
+                    user: {
+                        nickname: nickname
+                    }
+                }
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.userUpdate;
+                    expect(resp).toHaveProperty('message');
+                    expect(resp).toHaveProperty('token');
+                    expect(resp).toHaveProperty('user');
+                    expect(resp.user.nickname).toBe(nickname);
+                    resolve(resp);
+                }
+            });
+    });
+}
 
-export { registerUser, loginUser, elevateUser, failElevateUser }
+export { registerUser, loginUser, elevateUser, failElevateUser, updateNickname }
