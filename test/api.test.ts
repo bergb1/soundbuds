@@ -2,7 +2,7 @@ import app from '../src/app';
 import randomstring from 'randomstring';
 import { getNotFound } from './testFunctions';
 import { UserTest } from '../src/interfaces/User';
-import { elevateUser, loginUser, registerUser, failElevateUser, updateNickname, updateUsernameByID, failUpdateUsernameByID, userDelete } from './userFunctions';
+import { userDelete, userElevate, userFailElevate, userFailUpdateByID, userLogin, userRegister, userUpdate, userUpdateByID } from './userFunctions';
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 import userModel from '../src/api/models/userModel';
 
@@ -45,17 +45,17 @@ describe('Testing graphql api', () => {
 
     // User register
     it('should register a user', async () => {
-        testUser._id = (await registerUser(app, testUser)).user._id;
+        testUser._id = (await userRegister(app, testUser)).user._id;
     });
 
     // Creator register
     it('should register a user', async () => {
-        testCreator._id = (await registerUser(app, testCreator)).user._id;
+        testCreator._id = (await userRegister(app, testCreator)).user._id;
     });
 
     // Admin register
     it('should register a user', async () => {
-        testAdmin._id = (await registerUser(app, testAdmin)).user._id;
+        testAdmin._id = (await userRegister(app, testAdmin)).user._id;
         let actualUser = await userModel.findById(testAdmin._id);
         if(actualUser?.role == 'admin') {
             throw new Error('User was created with admin role');
@@ -64,7 +64,7 @@ describe('Testing graphql api', () => {
 
     // Root login
     it(`should login the root`, async () => {
-        rootUserData = await loginUser(app, {
+        rootUserData = await userLogin(app, {
             username: 'root',
             email: process.env.ROOT_EMAIL as string,
             password: process.env.ROOT_PWD as string
@@ -73,17 +73,17 @@ describe('Testing graphql api', () => {
 
     // User login
     it('should login a user', async () => {
-        testUserData = await loginUser(app, testUser);
+        testUserData = await userLogin(app, testUser);
     });
 
     // Test escalation with wrong priviledge
     it(`should't elevate the user to an admin`, async () => {
-        await failElevateUser(app, testAdmin._id!, 'admin', testUserData.token!);
+        await userFailElevate(app, testAdmin._id!, 'admin', testUserData.token!);
     });
 
     // Assign the admin role to the admin
     it('should elevate a user to an admin', async () => {
-        await elevateUser(app, testAdmin._id!, 'admin', rootUserData.token!);
+        await userElevate(app, testAdmin._id!, 'admin', rootUserData.token!);
         let actualUser = await userModel.findById(testAdmin._id);
         if(actualUser?.role != 'admin') {
             throw new Error('User was not elevated');
@@ -92,12 +92,12 @@ describe('Testing graphql api', () => {
 
     // Admin login
     it('should login a user', async () => {
-        testAdminData = await loginUser(app, testAdmin);
+        testAdminData = await userLogin(app, testAdmin);
     });
 
     // Assign the creator role to creator
     it('should elevate a user to a creator', async () => {
-        await elevateUser(app, testCreator._id!, 'creator', testAdminData.token!);
+        await userElevate(app, testCreator._id!, 'creator', testAdminData.token!);
         let actualUser = await userModel.findById(testCreator._id);
         if(actualUser?.role != 'creator') {
             throw new Error('User was not elevated');
@@ -106,22 +106,22 @@ describe('Testing graphql api', () => {
 
     // Test update user
     it(`should update a user's nickname`, async () => {
-        await updateNickname(app, 'Test User', testUserData.token!);
+        await userUpdate(app, testUserData.token!);
     });
 
     // Test admin update user
     it(`should update a creator's username as an admin`, async () => {
-        testCreator.username = (await updateUsernameByID(app, testCreator._id!, testAdminData.token!)).user.username;
+        testCreator.username = (await userUpdateByID(app, testCreator._id!, testAdminData.token!)).user.username;
     });
 
     // Test update by ID auth
     it(`shouldn't update the creator's username as a user`, async () => {
-        await failUpdateUsernameByID(app, testCreator._id!, testUserData.token!);
+        await userFailUpdateByID(app, testCreator._id!, testUserData.token!);
     });
 
     // Creator login
     it('should login a creator', async () => {
-        testCreatorData = await loginUser(app, testCreator);
+        testCreatorData = await userLogin(app, testCreator);
     });
 
     // User delete

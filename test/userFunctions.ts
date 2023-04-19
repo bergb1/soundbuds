@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Should register a user
-const registerUser = (
+const userRegister = (
     url: string | Function,
     user: UserTest
 ): Promise<LoginMessageResponse> => {
@@ -57,7 +57,7 @@ const registerUser = (
 };
 
 // Should login a user
-const loginUser = (
+const userLogin = (
     url: string | Function,
     user: UserTest
 ): Promise<LoginMessageResponse> => {
@@ -102,7 +102,7 @@ const loginUser = (
     });
 };
 
-const elevateUser = (
+const userElevate = (
     url: string | Function,
     _id: string, role: string, token: string
 ): Promise<LoginMessageResponse> => {
@@ -142,7 +142,7 @@ const elevateUser = (
     });
 }
 
-const failElevateUser = (
+const userFailElevate = (
     url: string | Function,
     _id: string, role: string, token: string
 ): Promise<LoginMessageResponse> => {
@@ -181,10 +181,11 @@ const failElevateUser = (
     });
 }
 
-const updateNickname = (
+const userUpdate = (
     url: string | Function,
-    nickname: string, token: string
+    token: string
 ): Promise<LoginMessageResponse> => {
+    const nickname = 'Nickname Tester';
     return new Promise((resolve, reject) => {
         request(url)
             .post('/graphql')
@@ -226,11 +227,11 @@ const updateNickname = (
     });
 }
 
-const updateUsernameByID = (
+const userUpdateByID = (
     url: string | Function,
     id: string, token: string
 ): Promise<LoginMessageResponse> => {
-    let username = 'Test Creator ' + randomstring.generate(7);
+    let username = 'Test Person ' + randomstring.generate(7);
     return new Promise((resolve, reject) => {
         request(url)
             .post('/graphql')
@@ -273,7 +274,7 @@ const updateUsernameByID = (
     });
 }
 
-const failUpdateUsernameByID = (
+const userFailUpdateByID = (
     url: string | Function,
     id: string, token: string
 ): Promise<LoginMessageResponse> => {
@@ -351,4 +352,4 @@ const userDelete = (
     });
 }
 
-export { registerUser, loginUser, elevateUser, failElevateUser, updateNickname, updateUsernameByID, failUpdateUsernameByID, userDelete }
+export { userRegister, userLogin, userElevate, userFailElevate, userUpdate, userUpdateByID, userFailUpdateByID, userDelete }
