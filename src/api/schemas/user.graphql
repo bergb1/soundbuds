@@ -30,8 +30,8 @@ input UserModify {
     password: String
     nickname: String
     profile_color: String
-    favorite_song: Song
-    favorite_album: Album
+    favorite_song: ID
+    favorite_album: ID
 }
 
 type Query {
