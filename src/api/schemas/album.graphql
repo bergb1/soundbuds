@@ -7,5 +7,5 @@ type Album {
 }
 
 type Query {
-    songs: [Album]
+    albums: [Album]
 }
