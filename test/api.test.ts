@@ -2,7 +2,7 @@ import app from '../src/app';
 import randomstring from 'randomstring';
 import { getNotFound } from './testFunctions';
 import { UserTest } from '../src/interfaces/User';
-import { elevateUser, loginUser, registerUser, failElevateUser, updateNickname, updateUsernameByID, failUpdateUsernameByID } from './userFunctions';
+import { elevateUser, loginUser, registerUser, failElevateUser, updateNickname, updateUsernameByID, failUpdateUsernameByID, userDelete } from './userFunctions';
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 import userModel from '../src/api/models/userModel';
 
@@ -122,5 +122,10 @@ describe('Testing graphql api', () => {
     // Creator login
     it('should login a creator', async () => {
         testCreatorData = await loginUser(app, testCreator);
+    });
+
+    // User delete
+    it(`Should delete the user`, async () => {
+        await userDelete(app, testUserData.token!);
     });
 });

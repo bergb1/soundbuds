@@ -314,4 +314,41 @@ const failUpdateUsernameByID = (
     });
 }
 
-export { registerUser, loginUser, elevateUser, failElevateUser, updateNickname, updateUsernameByID, failUpdateUsernameByID }
+const userDelete = (
+    url: string | Function, 
+    token: string
+): Promise<LoginMessageResponse> => {
+    return new Promise((resolve, reject) => {
+        request(url)
+            .post('/graphql')
+            .set('Content-type', 'application/json')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+                query: 
+                    `mutation userDelete() {
+                        userDelete() {
+                            message
+                            token
+                            user {
+                                _id
+                            }
+                        }
+                    }`
+                
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.userDelete;
+                    expect(resp).toHaveProperty('message');
+                    expect(resp).toHaveProperty('token');
+                    expect(resp).toHaveProperty('user');
+                    expect(resp.user).toHaveProperty('_id');
+                    resolve(resp);
+                }
+            });
+    });
+}
+
+export { registerUser, loginUser, elevateUser, failElevateUser, updateNickname, updateUsernameByID, failUpdateUsernameByID, userDelete }
