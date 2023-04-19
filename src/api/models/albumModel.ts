@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import { SongDatabase } from '../../interfaces/Song';
+import { AlbumDatabase } from '../../interfaces/Album';
 
-const songModel = new mongoose.Schema<SongDatabase>({
+const songModel = new mongoose.Schema<AlbumDatabase>({
     name: {
         type: String,
         required: true
@@ -17,11 +17,7 @@ const songModel = new mongoose.Schema<SongDatabase>({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
-    },
-    album: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Album'
     }
 });
 
-export default mongoose.model<SongDatabase>('Song', songModel);
+export default mongoose.model<AlbumDatabase>('Song', songModel);
