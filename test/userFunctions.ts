@@ -326,8 +326,8 @@ const userDelete = (
             .set('Authorization', 'Bearer ' + token)
             .send({
                 query: 
-                    `mutation userDelete() {
-                        userDelete() {
+                    `mutation userDelete {
+                        userDelete {
                             message
                             token
                             user {
