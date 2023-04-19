@@ -273,4 +273,45 @@ const updateUsernameByID = (
     });
 }
 
-export { registerUser, loginUser, elevateUser, failElevateUser, updateNickname, updateUsernameByID }
+const failUpdateUsernameByID = (
+    url: string | Function,
+    id: string, token: string
+): Promise<LoginMessageResponse> => {
+    let username = 'Test Creator ' + randomstring.generate(7);
+    return new Promise((resolve, reject) => {
+        request(url)
+            .post('/graphql')
+            .set('Content-type', 'application/json')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+                query: 
+                    `mutation userUpdateByID($id: ID!, $user: AdminModify!) {
+                        userUpdateByID(_id: $id, user: $user) {
+                            message
+                            token
+                            user {
+                                _id
+                                username
+                            }
+                        }
+                    }`
+                , variables: {
+                    id: id,
+                    user: {
+                        username: username
+                    }
+                }
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.userUpdateByID;
+                    if(!resp) resolve(resp);
+                    else reject(resp);
+                }
+            });
+    });
+}
+
+export { registerUser, loginUser, elevateUser, failElevateUser, updateNickname, updateUsernameByID, failUpdateUsernameByID }

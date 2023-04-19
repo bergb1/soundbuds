@@ -2,7 +2,7 @@ import app from '../src/app';
 import randomstring from 'randomstring';
 import { getNotFound } from './testFunctions';
 import { UserTest } from '../src/interfaces/User';
-import { elevateUser, loginUser, registerUser, failElevateUser, updateNickname, updateUsernameByID } from './userFunctions';
+import { elevateUser, loginUser, registerUser, failElevateUser, updateNickname, updateUsernameByID, failUpdateUsernameByID } from './userFunctions';
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 import userModel from '../src/api/models/userModel';
 
@@ -104,18 +104,23 @@ describe('Testing graphql api', () => {
         }
     });
 
-    // Creator login
-    it('should login a creator', async () => {
-        testCreatorData = await loginUser(app, testCreator);
-    });
-
     // Test update user
-    it(`Should update a user's nickname`, async () => {
+    it(`should update a user's nickname`, async () => {
         await updateNickname(app, 'Test User', testUserData.token!);
     });
 
     // Test admin update user
-    it(`Should update a creator's nickname as an admin`, async () => {
-        await updateUsernameByID(app, testCreator._id!, testAdminData.token!);
+    it(`should update a creator's username as an admin`, async () => {
+        testCreator.username = (await updateUsernameByID(app, testCreator._id!, testAdminData.token!)).user.username;
+    });
+
+    // Test update by ID auth
+    it(`shouldn't update the creator's username as a user`, async () => {
+        await failUpdateUsernameByID(app, testCreator._id!, testUserData.token!);
+    });
+
+    // Creator login
+    it('should login a creator', async () => {
+        testCreatorData = await loginUser(app, testCreator);
     });
 });
