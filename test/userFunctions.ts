@@ -73,9 +73,6 @@ const loginUser = (
                             user {
                                 _id
                                 username
-                                email
-                                nickname
-                                profile_color
                             }
                         }
                     }`
@@ -97,7 +94,7 @@ const loginUser = (
                     expect(resp.user).toHaveProperty('_id');
                     expect(resp.user).not.toHaveProperty('password');
                     expect(resp.user).not.toHaveProperty('role');
-                    expect(resp.user.email).toBe(user.email);
+                    expect(resp.user.username).toBe(user.username);
                     resolve(resp);
                 }
             });
@@ -118,13 +115,8 @@ const elevateUser = (
                     `mutation elevatePriviledges($_id: ID!, $role: String!) {
                         elevatePriviledges(_id: $_id, role: $role) {
                             message
-                            token
                             user {
                                 _id
-                                username
-                                email
-                                nickname
-                                profile_color
                             }
                         }
                     }`
@@ -139,7 +131,6 @@ const elevateUser = (
                 } else {
                     const resp = response.body.data.elevatePriviledges;
                     expect(resp).toHaveProperty('message');
-                    expect(resp).toHaveProperty('token');
                     expect(resp).toHaveProperty('user');
                     expect(resp.user).toHaveProperty('_id');
                     expect(resp.user).not.toHaveProperty('password');
@@ -164,13 +155,8 @@ const failElevateUser = (
                     `mutation elevatePriviledges($_id: ID!, $role: String!) {
                         elevatePriviledges(_id: $_id, role: $role) {
                             message
-                            token
                             user {
                                 _id
-                                username
-                                email
-                                nickname
-                                profile_color
                             }
                         }
                     }`
@@ -211,8 +197,6 @@ const updateNickname = (
                             token
                             user {
                                 _id
-                                username
-                                email
                                 nickname
                             }
                         }
@@ -228,9 +212,13 @@ const updateNickname = (
                     reject(err);
                 } else {
                     const resp = response.body.data.userUpdate;
+                    console.log(resp);
                     expect(resp).toHaveProperty('message');
                     expect(resp).toHaveProperty('token');
                     expect(resp).toHaveProperty('user');
+                    expect(resp.user).toHaveProperty('_id');
+                    expect(resp.user).not.toHaveProperty('password');
+                    expect(resp.user).not.toHaveProperty('role');
                     expect(resp.user.nickname).toBe(nickname);
                     resolve(resp);
                 }
