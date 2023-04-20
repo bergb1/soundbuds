@@ -58,6 +58,14 @@ export default {
             return await userModel
                 .findById(args._id)
                 .select('-__v -password -role');
+        },
+        usersByName: async (
+            _parent: unknown,
+            args: {username: string}
+        ) => {
+            return await userModel
+                .find({ username: { $regex: `(?i)(\w*(${args.username})\w*)` } })
+                .select('-__v -password -role');
         }
     },
     Mutation: {

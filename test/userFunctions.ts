@@ -478,4 +478,50 @@ const getSingleUser = (
     });
 };
 
-export { userRegister, userLogin, userElevate, userFailElevate, userUpdate, userUpdateByID, userFailUpdateByID, userDelete, userDeleteByID, getUsers, getSingleUser }
+const getUserByName = (
+    url: string | Function,
+    username: string
+): Promise<UserTest> => {
+    return new Promise((resolve, reject) => {
+        request(url)
+            .post('/graphql')
+            .set('Content-type', 'application/json')
+            .send({
+                query: 
+                    `query usersByName($username: String!) {
+                        usersByName(username: $username) {
+                            _id
+                            username
+                            email
+                            nickname
+                            profile_color
+                            favorite_song {
+                                _id
+                            }
+                            favorite_album {
+                                _id
+                            }
+                        }
+                    }`,
+                variables: {
+                    username: username
+                },
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.usersByName;
+                    expect(resp[0]).toHaveProperty('_id');
+                    expect(resp[0]).toHaveProperty('username');
+                    expect(resp[0]).toHaveProperty('email');
+                    expect(resp[0]).toHaveProperty('profile_color');
+                    expect(resp[0]).not.toHaveProperty('password');
+                    expect(resp[0]).not.toHaveProperty('role');
+                    resolve(resp);
+                }
+            });
+    });
+};
+
+export { userRegister, userLogin, userElevate, userFailElevate, userUpdate, userUpdateByID, userFailUpdateByID, userDelete, userDeleteByID, getUsers, getSingleUser, getUserByName }

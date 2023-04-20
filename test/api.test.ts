@@ -2,7 +2,7 @@ import app from '../src/app';
 import randomstring from 'randomstring';
 import { getNotFound } from './testFunctions';
 import { UserTest } from '../src/interfaces/User';
-import { getSingleUser, getUsers, userDelete, userDeleteByID, userElevate, userFailElevate, userFailUpdateByID, userLogin, userRegister, userUpdate, userUpdateByID } from './userFunctions';
+import { getSingleUser, getUserByName, getUsers, userDelete, userDeleteByID, userElevate, userFailElevate, userFailUpdateByID, userLogin, userRegister, userUpdate, userUpdateByID } from './userFunctions';
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 import userModel from '../src/api/models/userModel';
 
@@ -71,7 +71,7 @@ describe('Testing graphql api', () => {
     });
 
     it(`should get the creater user by searching crea`, async () => {
-
+        await getUserByName(app, 'cre');
     });
 
     // Root login
