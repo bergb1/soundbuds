@@ -1,6 +1,6 @@
 type Follow {
     user: ID!
-    target: User!
+    target: ID!
 }
 
 type Query {

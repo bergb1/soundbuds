@@ -35,7 +35,7 @@ export default {
                 .find( { user: user._id } )
                 .select('-__v -_id');
 
-            return following.map(rel => rel.target._id);
+            return following.map(rel => rel.target);
         },
         followMutuals: async (
             _parent: unknown,
@@ -54,7 +54,7 @@ export default {
             // Find all mutuals
             for (let i = 0; i < following.length; i++) {
                 for (let j = 0; j < followers.length; j++) {
-                    if (following[i].target._id.equals(followers[j].user)) {
+                    if (following[i].target.equals(followers[j].user)) {
                         mutuals.push(followers.splice(j, 1)[0].user);
                         break;
                     }

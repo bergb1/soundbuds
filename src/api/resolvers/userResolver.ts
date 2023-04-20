@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql';
 import LoginMessageResponse from '../../interfaces/LoginMessageResponse';
-import { User, UserDatabase, UserIdWithToken } from '../../interfaces/User';
+import { User, UserIdWithToken } from '../../interfaces/User';
 import Credentials from '../../interfaces/Credentials';
 import userModel from '../models/userModel';
 import bcrypt from 'bcryptjs';
@@ -68,11 +68,6 @@ export default {
     Album: {
         creator: async (parent: Album) => {
             return await userModel.findById(parent.creator);
-        }
-    },
-    Follow: {
-        target: async (parent: Follower) => {
-            return await userModel.findById(parent.target);
         }
     },
     Query: {
