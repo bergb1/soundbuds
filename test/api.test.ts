@@ -62,15 +62,18 @@ describe('Testing graphql api', () => {
         }
     });
 
+    // Get All test
     it(`should retrieve an array of all the users in the database`, async () => {
         await getUsers(app);
     });
 
+    // Get Single test
     it(`should get the admin user`, async () => {
         await getSingleUser(app, testAdmin._id!);
     });
 
-    it(`should get the creater user by searching crea`, async () => {
+    // Get by matching usernames test
+    it(`should get the 'Test Creater' user by searching cre`, async () => {
         await getUserByName(app, 'cre');
     });
 

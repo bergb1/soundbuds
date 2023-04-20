@@ -390,7 +390,7 @@ const userDeleteByID = (
     });
 }
 
-// get user from graphql query users
+// Get All test
 const getUsers = (url: string | Function): Promise<UserTest[]> => {
     return new Promise((resolve, reject) => {
       request(url)
@@ -432,6 +432,7 @@ const getUsers = (url: string | Function): Promise<UserTest[]> => {
     });
 };
 
+// Get Single test
 const getSingleUser = (
     url: string | Function,
     _id: string
@@ -478,6 +479,7 @@ const getSingleUser = (
     });
 };
 
+// Get by matching usernames test
 const getUserByName = (
     url: string | Function,
     username: string
