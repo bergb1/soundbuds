@@ -390,4 +390,92 @@ const userDeleteByID = (
     });
 }
 
-export { userRegister, userLogin, userElevate, userFailElevate, userUpdate, userUpdateByID, userFailUpdateByID, userDelete, userDeleteByID }
+// get user from graphql query users
+const getUsers = (url: string | Function): Promise<UserTest[]> => {
+    return new Promise((resolve, reject) => {
+      request(url)
+        .post('/graphql')
+        .set('Content-type', 'application/json')
+        .send({
+            query: 
+                `query users {
+                    users{
+                        _id
+                        username
+                        email
+                        nickname
+                        profile_color
+                        favorite_song {
+                            _id
+                        }
+                        favorite_album {
+                            _id
+                        }
+                    }
+                }`,
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.users;
+                    expect(resp).toBeInstanceOf(Array);
+                    expect(resp[0]).toHaveProperty('_id');
+                    expect(resp[0]).toHaveProperty('username');
+                    expect(resp[0]).toHaveProperty('email');
+                    expect(resp[0]).toHaveProperty('profile_color');
+                    expect(resp[0]).not.toHaveProperty('password');
+                    expect(resp[0]).not.toHaveProperty('role');
+                    resolve(resp);
+                }
+            });
+    });
+};
+
+const getSingleUser = (
+    url: string | Function,
+    _id: string
+): Promise<UserTest> => {
+    return new Promise((resolve, reject) => {
+        request(url)
+            .post('/graphql')
+            .set('Content-type', 'application/json')
+            .send({
+                query: 
+                    `query user($_id: ID!) {
+                        user(_id: $_id) {
+                            _id
+                            username
+                            email
+                            nickname
+                            profile_color
+                            favorite_song {
+                                _id
+                            }
+                            favorite_album {
+                                _id
+                            }
+                        }
+                    }`,
+                variables: {
+                    _id: _id
+                },
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.user;
+                    expect(resp._id).toBe(_id);
+                    expect(resp).toHaveProperty('username');
+                    expect(resp).toHaveProperty('email');
+                    expect(resp).toHaveProperty('profile_color');
+                    expect(resp).not.toHaveProperty('password');
+                    expect(resp).not.toHaveProperty('role');
+                    resolve(resp);
+                }
+            });
+    });
+};
+
+export { userRegister, userLogin, userElevate, userFailElevate, userUpdate, userUpdateByID, userFailUpdateByID, userDelete, userDeleteByID, getUsers, getSingleUser }

@@ -49,7 +49,15 @@ export default {
         users: async () => {
             return await userModel
                 .find()
-                .select('-__v');
+                .select('-__v -password -role');
+        },
+        user: async (
+            _parent: unknown,
+            args: {_id: string}
+        ) => {
+            return await userModel
+                .findById(args._id)
+                .select('-__v -password -role');
         }
     },
     Mutation: {
