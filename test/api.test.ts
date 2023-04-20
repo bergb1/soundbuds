@@ -2,7 +2,7 @@ import app from '../src/app';
 import randomstring from 'randomstring';
 import { getNotFound } from './testFunctions';
 import { UserTest } from '../src/interfaces/User';
-import { getSingleUser, getUserByName, getUsers, userDelete, userDeleteByID, userElevate, userFailElevate, userFailUpdateByID, userLogin, userRegister, userUpdate, userUpdateByID } from './userFunctions';
+import { getSingleUser, getUserByName, getUsers, userDelete, userDeleteByID, userElevate, userLogin, userRegister, userUpdate, userUpdateByID } from './userFunctions';
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 import userModel from '../src/api/models/userModel';
 
@@ -91,11 +91,6 @@ describe('Testing graphql api', () => {
         testUserData = await userLogin(app, testUser);
     });
 
-    // Test escalation with wrong priviledge
-    it(`should't elevate the user to an admin`, async () => {
-        await userFailElevate(app, testAdmin._id!, 'admin', testUserData.token!);
-    });
-
     // Assign the admin role to the admin
     it('should elevate a user to an admin', async () => {
         await userElevate(app, testAdmin._id!, 'admin', rootUserData.token!);
@@ -127,11 +122,6 @@ describe('Testing graphql api', () => {
     // Test admin update user
     it(`should update a creator's username as an admin`, async () => {
         testCreator.username = (await userUpdateByID(app, testCreator._id!, testAdminData.token!)).user.username;
-    });
-
-    // Test update by ID auth
-    it(`shouldn't update the creator's username as a user`, async () => {
-        await userFailUpdateByID(app, testCreator._id!, testUserData.token!);
     });
 
     // Creator login

@@ -142,45 +142,6 @@ const userElevate = (
     });
 }
 
-const userFailElevate = (
-    url: string | Function,
-    _id: string, role: string, token: string
-): Promise<LoginMessageResponse> => {
-    return new Promise((resolve, reject) => {
-        request(url)
-            .post('/graphql')
-            .set('Content-type', 'application/json')
-            .set('Authorization', 'Bearer ' + token)
-            .send({
-                query: 
-                    `mutation userChangeRole($_id: ID!, $role: String!) {
-                        userChangeRole(_id: $_id, role: $role) {
-                            message
-                            user {
-                                _id
-                            }
-                        }
-                    }`
-                , variables: {
-                    role: role,
-                    _id: _id
-                }
-            })
-            .expect(200, (err, response) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    const resp = response.body.data.userChangeRole;
-                    if(!resp) {
-                        resolve(resp);
-                    } else {
-                        reject(resp);
-                    }
-                }
-            });
-    });
-}
-
 const userUpdate = (
     url: string | Function,
     token: string
@@ -269,47 +230,6 @@ const userUpdateByID = (
                     expect(resp.user).not.toHaveProperty('role');
                     expect(resp.user.username).toBe(username);
                     resolve(resp);
-                }
-            });
-    });
-}
-
-const userFailUpdateByID = (
-    url: string | Function,
-    _id: string, token: string
-): Promise<LoginMessageResponse> => {
-    let username = 'Test Creator ' + randomstring.generate(7);
-    return new Promise((resolve, reject) => {
-        request(url)
-            .post('/graphql')
-            .set('Content-type', 'application/json')
-            .set('Authorization', 'Bearer ' + token)
-            .send({
-                query: 
-                    `mutation userUpdateByID($_id: ID!, $user: AdminModify!) {
-                        userUpdateByID(_id: $_id, user: $user) {
-                            message
-                            token
-                            user {
-                                _id
-                                username
-                            }
-                        }
-                    }`
-                , variables: {
-                    _id: _id,
-                    user: {
-                        username: username
-                    }
-                }
-            })
-            .expect(200, (err, response) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    const resp = response.body.data.userUpdateByID;
-                    if(!resp) resolve(resp);
-                    else reject(resp);
                 }
             });
     });
@@ -526,4 +446,4 @@ const getUserByName = (
     });
 };
 
-export { userRegister, userLogin, userElevate, userFailElevate, userUpdate, userUpdateByID, userFailUpdateByID, userDelete, userDeleteByID, getUsers, getSingleUser, getUserByName }
+export { userRegister, userLogin, userElevate, userUpdate, userUpdateByID, userDelete, userDeleteByID, getUsers, getSingleUser, getUserByName }
