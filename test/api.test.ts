@@ -62,6 +62,18 @@ describe('Testing graphql api', () => {
         }
     });
 
+    it(`should retrieve an array of all the users in the database`, async () => {
+
+    });
+
+    it(`should get the admin user`, async () => {
+
+    });
+
+    it(`should get the creater user by searching crea`, async () => {
+        
+    });
+
     // Root login
     it(`should login the root`, async () => {
         rootUserData = await userLogin(app, {
