@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken';
 import { salt } from '../..';
 import { Song } from '../../interfaces/Song';
 import { Album } from '../../interfaces/Album';
+import { Follower } from '../../interfaces/Follower';
 
 // Function to check if user one may modify user two
 const mayModify = async (user_role: string, target_id: string, role?: string) => {
@@ -43,6 +44,11 @@ export default {
     Album: {
         creator: async (parent: Album) => {
             return await userModel.findById(parent.creator);
+        }
+    },
+    Follow: {
+        target: async (parent: Follower) => {
+            return await userModel.findById(parent.target);
         }
     },
     Query: {

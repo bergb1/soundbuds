@@ -1,18 +1,13 @@
 type Follow {
-    _id: ID!
     user: ID!
-    target: ID!
+    target: User!
 }
 
 type Query {
-    followers(_id: ID!): [ID]
-    followedBy(user: ID!, target: ID!): ID
-    following(_id: ID!): [ID]
-    follows(user: ID!, target: ID!): ID
+    followers(user_id: ID!): [Follow]
+    following(user_id: ID!): [Follow]
 }
 
 type Mutation {
-    followAdd(user: ID!, target: ID!): String
-    followDelete(user: ID!, target: ID!): String
-    followDeleteAll(user: ID!): String
+    followAdd(target_id: ID!): Follow
 }
