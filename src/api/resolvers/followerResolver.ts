@@ -15,9 +15,11 @@ export default {
             }
 
             // Execute the request
-            return await followerModel
+            const followers = await followerModel
                 .find( { target: user._id } )
                 .select('-__v -_id');
+
+            return followers.map(rel => rel.user);
         },
         following: async (
             _parent: unknown,
@@ -29,9 +31,11 @@ export default {
             }
 
             // Execute the request
-            return await followerModel
+            const following = await followerModel
                 .find( { user: user._id } )
                 .select('-__v -_id');
+
+            return following.map(rel => rel.target._id);
         },
         followMutuals: async (
             _parent: unknown,

@@ -4,8 +4,8 @@ type Follow {
 }
 
 type Query {
-    followers: [Follow]
-    following: [Follow]
+    followers: [ID]
+    following: [ID]
     followMutuals: [ID]
 }
 
