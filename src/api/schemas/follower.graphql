@@ -4,10 +4,12 @@ type Follow {
 }
 
 type Query {
-    followers(user_id: ID!): [Follow]
-    following(user_id: ID!): [Follow]
+    followers: [Follow]
+    following: [Follow]
+    followMutuals: [ID]
 }
 
 type Mutation {
     followAdd(target_id: ID!): Follow
+    followRemove(target_id: ID!): Follow
 }
