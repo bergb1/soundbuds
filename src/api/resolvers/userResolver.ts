@@ -9,6 +9,9 @@ import { salt } from '../..';
 import { Song } from '../../interfaces/Song';
 import { Album } from '../../interfaces/Album';
 import { Follower } from '../../interfaces/Follower';
+import followerModel from '../models/followerModel';
+import songModel from '../models/songModel';
+import albumModel from '../models/albumModel';
 
 // Function to check if user one may modify user two
 const mayModify = async (user_role: string, target_id: string, role?: string) => {
@@ -33,6 +36,27 @@ const mayModify = async (user_role: string, target_id: string, role?: string) =>
     } else {
         return true;
     }
+}
+
+// removes all of the instance dependencies
+const removeDependencies = async (user_id: string) => {
+    // Delete follower relations
+    await followerModel.deleteMany( { user: user_id } );
+    await followerModel.deleteMany( { target: user_id } );
+
+    // Find out which songs and albums the user created
+    const songs = await songModel.find( { creator: user_id } );
+    songs.forEach(async song => {
+        await userModel.updateMany( { favorite_song: song._id }, { favorite_song: null } );
+    });
+    const albums = await albumModel.find( { creator: user_id } );
+    albums.forEach(async album => {
+        await userModel.updateMany( { favorite_album: album._id }, { favorite_album: null } )
+    });
+
+    // Delete songs and albums
+    await songModel.deleteMany( { creator: user_id } );
+    await albumModel.deleteMany( { creator: user_id } );
 }
 
 export default {
@@ -236,6 +260,9 @@ export default {
                 throw new GraphQLError('user not deleted');
             }
 
+            // Remove the dependencies on this user
+            await removeDependencies(user._id);
+
             // Manage the response
             const message: LoginMessageResponse = {
                 message: 'user deleted',
@@ -264,6 +291,9 @@ export default {
             if (!deletedUser) {
                 throw new GraphQLError('user not deleted');
             }
+
+            // Remove the dependencies on this user
+            await removeDependencies(user._id);
 
             // Manage the response
             const message: LoginMessageResponse = {
