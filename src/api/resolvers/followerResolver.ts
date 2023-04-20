@@ -61,7 +61,6 @@ export default {
                 }
             };
 
-            // Return the mutual followers
             return mutuals;
         }
     },
