@@ -103,7 +103,7 @@ export default {
             const deleted = await followerModel.deleteOne( { user: user._id, target: args.target_id } );
 
             // Validate the response
-            if (!deleted) {
+            if (!deleted.acknowledged) {
                 throw new GraphQLError('user not unfollowed');
             }
 
