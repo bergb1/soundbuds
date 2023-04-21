@@ -133,7 +133,7 @@ describe('Testing graphql api', () => {
 
     // Upload song cover test
     it('should upload a cover image for a song or album', async () => {
-        await coverUpload(app, 'cover1.jpg');
+        await coverUpload(app, 'cover1.jpg', testCreatorData.token!);
     });
 
     // Create song test
@@ -143,7 +143,7 @@ describe('Testing graphql api', () => {
 
     // Upload album cover test
     it('should upload a cover image for a song or album', async () => {
-        await coverUpload(app, 'cover2.jpg');
+        await coverUpload(app, 'cover2.jpg', testCreatorData.token!);
     });
 
     // Create album test
