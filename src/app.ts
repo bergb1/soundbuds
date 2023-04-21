@@ -1,4 +1,5 @@
 import express, { Express } from 'express';
+import api from './api';
 import helmet from 'helmet';
 import cors from 'cors';
 import typeDefs from './api/schemas/index';
@@ -14,6 +15,14 @@ import { notFound, errorHandler } from './middlewares';
 // Configuration for Express
 const conf_app = async (app: Express) => {
     try {
+        // Configure middleware
+        app.use(
+            helmet({
+                crossOriginEmbedderPolicy: false,
+                contentSecurityPolicy: false
+            })
+        );
+
         // Setup graphql schema
         const schema = applyMiddleware(
             makeExecutableSchema({
@@ -32,11 +41,14 @@ const conf_app = async (app: Express) => {
 
         app.use(
             '/graphql',
+            cors<cors.CorsRequest>(),
+            express.json(),
             expressMiddleware(server, {
                 context: async ({req}) => authenticate(req),
             })
         );
 
+        app.use('/api', api);
         app.use(notFound);
         app.use(errorHandler);
     } catch (err) {
@@ -46,16 +58,6 @@ const conf_app = async (app: Express) => {
 
 // Perform the configuration
 const app = express();
-
-// Configure middleware
-app.use(
-    helmet({
-        crossOriginEmbedderPolicy: false,
-        contentSecurityPolicy: false
-    })
-);
-app.use(cors<cors.CorsRequest>());
-app.use(express.json());
 
 // Configure the app
 conf_app(app);

@@ -187,7 +187,6 @@ const followerRelationsRemoved = (
                     reject(err);
                 } else {
                     const resp: string[] = response.body.data.followers;
-                    console.log(resp);
                     expect(resp).toBeDefined();
                     expect(resp).toBeInstanceOf(Array);
                     expect(resp.length).toBe(0);

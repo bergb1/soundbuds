@@ -6,6 +6,7 @@ import { getSingleUser, getUserByName, getUsers, userDelete, userDeleteByID, use
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 import userModel from '../src/api/models/userModel';
 import { followMutuals, followUser, followerRelationsRemoved, followers, following, unfollowUser } from './followFunctions';
+import { coverUpload } from './songFunctions';
 
 describe('Testing graphql api', () => {
     // Test not found
@@ -130,13 +131,30 @@ describe('Testing graphql api', () => {
         testCreatorData = await userLogin(app, testCreator);
     });
 
-    it('should upload a cover image for a song or album');
+    // Upload song cover test
+    it('should upload a cover image for a song or album', async () => {
+        await coverUpload(app, 'cover1.jpg');
+    });
 
-    it('should create a song');
+    // Create song test
+    it('should create a song', async () => {
 
-    it('should create an album');
+    });
 
-    it('should create a song by using the cover of an album');
+    // Upload album cover test
+    it('should upload a cover image for a song or album', async () => {
+        await coverUpload(app, 'cover2.jpg');
+    });
+
+    // Create album test
+    it('should create an album', async () => {
+
+    });
+
+    // Create song with album test
+    it('should create a song by using the cover of an album', async () => {
+
+    });
 
     // Follow test
     it('should follow the creator as a user', async () => {
