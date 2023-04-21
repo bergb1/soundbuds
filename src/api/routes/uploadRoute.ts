@@ -23,7 +23,7 @@ const makeThumbnail = async (
     next: NextFunction
   ) => {
     try {
-      const outputFile = req.file?.path + '_thumb.png'
+      const outputFile = req.file?.path + '_thumb'
       await sharp(req.file?.path)
         .resize(256, 256)
         .png()
@@ -31,7 +31,7 @@ const makeThumbnail = async (
       console.log(outputFile + ' created');
       next();
     } catch (error) {
-        next(new CustomError('Thumbnail not created', 500));
+        next(new CustomError('thumbnail not created', 500));
     }
 };
 
