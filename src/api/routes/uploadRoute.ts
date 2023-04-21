@@ -1,3 +1,4 @@
+import { unlink } from 'node:fs';
 import express, {NextFunction, Request, Response} from 'express';
 import sharp from 'sharp';
 import multer, {FileFilterCallback} from 'multer';
@@ -22,16 +23,33 @@ const makeThumbnail = async (
     next: NextFunction
   ) => {
     try {
-        console.log(req.file?.path);
-        await sharp(req.file?.path)
-            .resize(256, 256)
-            .png()
-            .toFile(req.file?.path + '_thumb');
-        next();
+      const outputFile = req.file?.path + '_thumb.png'
+      await sharp(req.file?.path)
+        .resize(256, 256)
+        .png()
+        .toFile(outputFile);
+      console.log(outputFile + ' created');
+      next();
     } catch (error) {
         next(new CustomError('Thumbnail not created', 500));
     }
 };
+
+const removeOriginal = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    unlink(req.file?.path as string, (err) => {
+    if (err) throw err;
+      console.log(req.file?.path + ' was deleted');
+    });
+    next();
+  } catch (error) {
+    next(new CustomError('original not deleted', 500));
+  }
+}
 
 const upload = multer({dest: './uploads/', fileFilter});
 const router = express.Router();
@@ -41,6 +59,7 @@ router
     .post(
         upload.single('cover'),
         makeThumbnail,
+        removeOriginal,
         coverPost
     );
 
