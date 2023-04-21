@@ -130,6 +130,14 @@ describe('Testing graphql api', () => {
         testCreatorData = await userLogin(app, testCreator);
     });
 
+    it('should upload a cover image for a song or album');
+
+    it('should create a song');
+
+    it('should create an album');
+
+    it('should create a song by using the cover of an album');
+
     // Follow test
     it('should follow the creator as a user', async () => {
         await followUser(app, testCreator._id!, testUserData.token!);
