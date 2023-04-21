@@ -8,6 +8,7 @@ const coverUpload = (
     return new Promise((resolve, reject) => {
         request(url)
             .post('/api/upload')
+            .set('Authorization', 'Bearer ' + token)
             .attach('cover', 'test/' + path)
             .expect(200, (err, response) => {
                 if (err) {
