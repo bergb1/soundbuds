@@ -168,16 +168,37 @@ const songGetAll = (
             .post('/graphql')
             .send({
                 query:
-                    ``,
-                variables: {
-                    
-                }
+                    `query Query {
+                        songs {
+                            _id
+                            name
+                            cover
+                            description
+                            creator {
+                                _id
+                                username
+                                nickname
+                            }
+                            album {
+                                _id
+                                name
+                            }
+                        }
+                    }`
             })
             .expect(200, (err, response) => {
                 if (err) {
                     reject(err);
                 } else {
-                    // resolve
+                    const resp = response.body.data.SongDelete as SongTest[];
+                    expect(resp).toBeInstanceOf(Array);
+                    expect(resp.length).toBeGreaterThan(0);
+                    expect(resp[0]).toBeDefined();
+                    expect(resp[0]._id).toBeDefined();
+                    expect(resp[0].name).toBeDefined();
+                    expect(resp[0].cover).toBeDefined();
+                    expect(resp[0].creator).toBeDefined();
+                    resolve(resp);
                 }
             });
     });
