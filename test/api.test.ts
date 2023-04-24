@@ -141,19 +141,14 @@ describe('Testing graphql api', () => {
 
     });
 
+    // Update song test
+    it(`Should update a song`, async () => {
+
+    });
+
     // Upload album cover test
     it('should upload a cover image for a song or album', async () => {
         await coverUpload(app, 'cover2.jpg', testCreatorData.token!);
-    });
-
-    // Create album test
-    it('should create an album', async () => {
-
-    });
-
-    // Create song with album test
-    it('should create a song by using the cover of an album', async () => {
-
     });
 
     // Follow test
@@ -191,23 +186,43 @@ describe('Testing graphql api', () => {
         await unfollowUser(app, testCreator._id!, testUserData.token!);
     });
 
+    // Get all songs
+    it(`should get all songs`, async () => {
+
+    });
+
+    // Should get one song
+    it(`should get one song`, async () => {
+        
+    });
+
+    // Search for song test
+    it(`should find all songs with an 'e' in it`, async () => {
+
+    });
+
+    // Should delete a song
+    it(`should delete a song`, async () => {
+
+    });
+
     // User delete
-    it(`Should delete the user`, async () => {
+    it(`should delete the user`, async () => {
         await userDelete(app, testUserData.token!);
     });
 
     // User delete by ID
-    it(`Should delete the admin as the root`, async () => {
+    it(`should delete the admin as the root`, async () => {
         await userDeleteByID(app, testAdmin._id!, rootUserData.token!);
+    });
+
+    // User delete by ID
+    it(`should delete the creator as an admin`, async () => {
+        await userDeleteByID(app, testCreator._id!, testAdminData.token!);
     });
 
     // Dependencies test
     it(`should find no followers for the creator's ID`, async () => {
         await followerRelationsRemoved(app, testCreatorData.token!);
     })
-
-    // User delete by ID
-    it(`Should delete the creator as an admin`, async () => {
-        await userDeleteByID(app, testCreator._id!, testAdminData.token!);
-    });
 });
