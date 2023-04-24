@@ -196,29 +196,4 @@ const followerRelationsRemoved = (
     });
 }
 
-const template = (
-    url: string | Function,
-    token: string
-) => {
-    return new Promise((resolve, reject) => {
-        request(url)
-            .post('/graphql')
-            .set('Content-type', 'application/json')
-            .set('Authorization', 'Bearer ' + token)
-            .send({
-                query:
-                `
-                
-                `
-            })
-            .expect(200, (err, response) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    // Acceptance Criteria
-                }
-            });
-    });
-}
-
 export { followUser, unfollowUser, followers, following, followMutuals, followerRelationsRemoved };

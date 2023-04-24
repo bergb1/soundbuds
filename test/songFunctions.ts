@@ -64,7 +64,7 @@ const songCreate = (
                 if (err) {
                     reject(err);
                 } else {
-                    const resp = response.body.data.SongCreate;
+                    const resp = response.body.data.SongCreate as SongTest;
                     expect(resp._id).toBeDefined();
                     expect(resp.name).toBe(args.song.name);
                     expect(resp.cover).toBe(args.song.cover);
@@ -114,7 +114,7 @@ const songUpdate = (
                 if (err) {
                     reject(err);
                 } else {
-                    const resp = response.body.data.SongUpdate;
+                    const resp = response.body.data.SongUpdate as SongTest;
                     expect(resp._id).toBe(args.song._id);
                     expect(resp.name).toBe(args.song.name);
                     expect(resp.cover).toBe(args.song.cover);
@@ -130,12 +130,32 @@ const songUpdate = (
 // Delete song test
 const songDelete = (
     url: string | Function,
-    token: string
+    token: string,
+    args: { _id: string }
 ): Promise<boolean> => {
     return new Promise((resolve, reject) => {
         request(url)
             .post('/graphql')
             .set('Authorization', 'Bearer ' + token)
+            .send({
+                query:
+                    `mutation SongDelete($id: ID!) {
+                        songDelete(_id: $id)
+                    }`,
+                variables: {
+                    id: args._id
+                }
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.SongDelete as boolean;
+                    expect(resp).toBeDefined();
+                    expect(resp).toBe(true);
+                    resolve(resp);
+                }
+            });
     });
 }
 
@@ -146,26 +166,70 @@ const songGetAll = (
     return new Promise((resolve, reject) => {
         request(url)
             .post('/graphql')
+            .send({
+                query:
+                    ``,
+                variables: {
+                    
+                }
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    // resolve
+                }
+            });
     });
 }
 
 // Get song test
 const songGet = (
     url: string | Function,
+    args: { _id: string }
 ): Promise<SongTest> => {
     return new Promise((resolve, reject) => {
         request(url)
             .post('/graphql')
+            .send({
+                query:
+                    ``,
+                variables: {
+
+                }
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    // resolve
+                }
+            });
     });
 }
 
 // Search for songs test
 const songSearch = (
     url: string | Function,
+    args: { name: string }
 ): Promise<SongTest[]> => {
     return new Promise((resolve, reject) => {
         request(url)
             .post('/graphql')
+            .send({
+                query:
+                    ``,
+                variables: {
+
+                }
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    // resolve
+                }
+            });
     });
 }
 

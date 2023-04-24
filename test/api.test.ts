@@ -216,17 +216,23 @@ describe('Testing graphql api', () => {
 
     // Should get one song
     it(`should get one song`, async () => {
-        await songGet(app);
+        await songGet(app, {
+            _id: testSong1._id!
+        });
     });
 
     // Search for song test
     it(`should find all songs with an 'e' in it`, async () => {
-        await songSearch(app);
+        await songSearch(app, {
+            name: 'e'
+        });
     });
 
     // Should delete a song
     it(`should delete a song`, async () => {
-        await songDelete(app, testCreatorData.token!);
+        await songDelete(app, testCreatorData.token!, {
+            _id: testSong1._id!
+        });
     });
 
     // User delete
