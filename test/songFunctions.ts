@@ -6,7 +6,7 @@ import { Song, SongTest } from '../src/interfaces/Song';
 const coverUpload = (
     url: string | Function,
     token: string,
-    args: {path: string}
+    args: { path: string }
 ): Promise<UploadMessageResponse> => {
     return new Promise((resolve, reject) => {
         request(url)
@@ -31,7 +31,7 @@ const coverUpload = (
 const songCreate = (
     url: string | Function,
     token: string,
-    args: {song: SongTest}
+    args: { song: SongTest }
 ): Promise<SongTest> => {
     return new Promise((resolve, reject) => {
         request(url)
@@ -55,8 +55,8 @@ const songCreate = (
                                 name
                             }
                         }
-                    }`
-                , variables: {
+                    }`,
+                variables: {
                     song: args.song
                 }
             })
@@ -80,12 +80,50 @@ const songCreate = (
 // Update song test
 const songUpdate = (
     url: string | Function,
-    token: string
+    token: string,
+    args: { song: SongTest }
 ): Promise<SongTest> => {
     return new Promise((resolve, reject) => {
         request(url)
             .post('/graphql')
             .set('Authorization', 'Bearer ' + token)
+            .send({
+                query: 
+                    `mutation SongUpdate($id: ID!, $song: SongUpdate!) {
+                        songUpdate(_id: $id, song: $song) {
+                            _id
+                            name
+                            cover
+                            description
+                            creator {
+                                _id
+                                username
+                                nickname
+                            }
+                            album {
+                                _id
+                                name
+                            }
+                        }
+                    }`,
+                variables: {
+                    song: args.song
+                }
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.SongUpdate;
+                    expect(resp._id).toBe(args.song._id);
+                    expect(resp.name).toBe(args.song.name);
+                    expect(resp.cover).toBe(args.song.cover);
+                    expect(resp.description).toBe(args.song.description);
+                    expect(resp.creator).toBe(args.song.creator);
+                    expect(resp.album).toBe(args.song.album);
+                    resolve(resp);
+                }
+            });
     });
 }
 

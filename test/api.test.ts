@@ -154,12 +154,17 @@ describe('Testing graphql api', () => {
     // Update song test
     it(`should update a song`, async () => {
         testSong1.description = 'Heavy metal music for heavy metal fans.';
-        await songUpdate(app, testCreatorData.token!);
+        testSong1 = await songUpdate(app, testCreatorData.token!, {
+            song: testSong1
+        });
     });
 
     // Song mutation as admin test
     it(`should update a song as an admin`, async () => {
-        await songUpdate(app, testAdminData.token!);
+        testSong1.name = 'Death Metal';
+        testSong1 = await songUpdate(app, testAdminData.token!, {
+            song: testSong1
+        });
     });
 
     // Upload album cover test
