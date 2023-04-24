@@ -28,6 +28,6 @@ type Query {
 
 type Mutation {
     songCreate(song: SongInput!): Song
-    songUpdate(song: SongUpdate!): Song
-    songDelete(name: String!): Int
+    songUpdate(id: ID!, song: SongUpdate!): Song
+    songDelete(id: ID!): Boolean
 }
