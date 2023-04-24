@@ -2,12 +2,13 @@ import request from 'supertest';
 import expect from 'expect';
 import {UserTest} from '../src/interfaces/User';
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
+import randomstring from 'randomstring';
 
 import dotenv from 'dotenv';
 dotenv.config();
 
 // Should register a user
-const registerUser = (
+const userRegister = (
     url: string | Function,
     user: UserTest
 ): Promise<LoginMessageResponse> => {
@@ -56,7 +57,7 @@ const registerUser = (
 };
 
 // Should login a user
-const loginUser = (
+const userLogin = (
     url: string | Function,
     user: UserTest
 ): Promise<LoginMessageResponse> => {
@@ -101,7 +102,7 @@ const loginUser = (
     });
 };
 
-const elevateUser = (
+const userElevate = (
     url: string | Function,
     _id: string, role: string, token: string
 ): Promise<LoginMessageResponse> => {
@@ -112,8 +113,8 @@ const elevateUser = (
             .set('Authorization', 'Bearer ' + token)
             .send({
                 query: 
-                    `mutation elevatePriviledges($_id: ID!, $role: String!) {
-                        elevatePriviledges(_id: $_id, role: $role) {
+                    `mutation userChangeRole($_id: ID!, $role: String!) {
+                        userChangeRole(_id: $_id, role: $role) {
                             message
                             user {
                                 _id
@@ -129,7 +130,7 @@ const elevateUser = (
                 if (err) {
                     reject(err);
                 } else {
-                    const resp = response.body.data.elevatePriviledges;
+                    const resp = response.body.data.userChangeRole;
                     expect(resp).toHaveProperty('message');
                     expect(resp).toHaveProperty('user');
                     expect(resp.user).toHaveProperty('_id');
@@ -141,49 +142,11 @@ const elevateUser = (
     });
 }
 
-const failElevateUser = (
+const userUpdate = (
     url: string | Function,
-    _id: string, role: string, token: string
+    token: string
 ): Promise<LoginMessageResponse> => {
-    return new Promise((resolve, reject) => {
-        request(url)
-            .post('/graphql')
-            .set('Content-type', 'application/json')
-            .set('Authorization', 'Bearer ' + token)
-            .send({
-                query: 
-                    `mutation elevatePriviledges($_id: ID!, $role: String!) {
-                        elevatePriviledges(_id: $_id, role: $role) {
-                            message
-                            user {
-                                _id
-                            }
-                        }
-                    }`
-                , variables: {
-                    role: role,
-                    _id: _id
-                }
-            })
-            .expect(200, (err, response) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    const resp = response.body.data.elevatePriviledges;
-                    if(!resp) {
-                        resolve(resp);
-                    } else {
-                        reject(resp);
-                    }
-                }
-            });
-    });
-}
-
-const updateNickname = (
-    url: string | Function,
-    nickname: string, token: string
-): Promise<LoginMessageResponse> => {
+    const nickname = 'Nickname Tester';
     return new Promise((resolve, reject) => {
         request(url)
             .post('/graphql')
@@ -212,7 +175,6 @@ const updateNickname = (
                     reject(err);
                 } else {
                     const resp = response.body.data.userUpdate;
-                    console.log(resp);
                     expect(resp).toHaveProperty('message');
                     expect(resp).toHaveProperty('token');
                     expect(resp).toHaveProperty('user');
@@ -226,4 +188,262 @@ const updateNickname = (
     });
 }
 
-export { registerUser, loginUser, elevateUser, failElevateUser, updateNickname }
+const userUpdateByID = (
+    url: string | Function,
+    _id: string, token: string
+): Promise<LoginMessageResponse> => {
+    let username = 'Test Person ' + randomstring.generate(7);
+    return new Promise((resolve, reject) => {
+        request(url)
+            .post('/graphql')
+            .set('Content-type', 'application/json')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+                query: 
+                    `mutation userUpdateByID($_id: ID!, $user: AdminModify!) {
+                        userUpdateByID(_id: $_id, user: $user) {
+                            message
+                            token
+                            user {
+                                _id
+                                username
+                            }
+                        }
+                    }`
+                , variables: {
+                    _id: _id,
+                    user: {
+                        username: username
+                    }
+                }
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.userUpdateByID;
+                    expect(resp).toHaveProperty('message');
+                    expect(resp).toHaveProperty('token');
+                    expect(resp).toHaveProperty('user');
+                    expect(resp.user).toHaveProperty('_id');
+                    expect(resp.user).not.toHaveProperty('password');
+                    expect(resp.user).not.toHaveProperty('role');
+                    expect(resp.user.username).toBe(username);
+                    resolve(resp);
+                }
+            });
+    });
+}
+
+const userDelete = (
+    url: string | Function, 
+    token: string
+): Promise<LoginMessageResponse> => {
+    return new Promise((resolve, reject) => {
+        request(url)
+            .post('/graphql')
+            .set('Content-type', 'application/json')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+                query: 
+                    `mutation userDelete {
+                        userDelete {
+                            message
+                            token
+                            user {
+                                _id
+                            }
+                        }
+                    }`
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.userDelete;
+                    expect(resp).toHaveProperty('message');
+                    expect(resp).toHaveProperty('token');
+                    expect(resp).toHaveProperty('user');
+                    expect(resp.user).toHaveProperty('_id');
+                    resolve(resp);
+                }
+            });
+    });
+}
+
+const userDeleteByID = (
+    url: string | Function, 
+    _id: string, token: string
+): Promise<LoginMessageResponse> => {
+    return new Promise((resolve, reject) => {
+        request(url)
+            .post('/graphql')
+            .set('Content-type', 'application/json')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+                query: 
+                    `mutation userDeleteByID($_id: ID!) {
+                        userDeleteByID(_id: $_id) {
+                            message
+                            token
+                            user {
+                                _id
+                            }
+                        }
+                    }`
+                , variables: {
+                    _id: _id,
+                }
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.userDeleteByID;
+                    expect(resp).toHaveProperty('message');
+                    expect(resp).toHaveProperty('token');
+                    expect(resp).toHaveProperty('user');
+                    expect(resp.user).toHaveProperty('_id');
+                    resolve(resp);
+                }
+            });
+    });
+}
+
+// Get All test
+const getUsers = (url: string | Function): Promise<UserTest[]> => {
+    return new Promise((resolve, reject) => {
+      request(url)
+        .post('/graphql')
+        .set('Content-type', 'application/json')
+        .send({
+            query: 
+                `query users {
+                    users{
+                        _id
+                        username
+                        email
+                        nickname
+                        profile_color
+                        favorite_song {
+                            _id
+                        }
+                        favorite_album {
+                            _id
+                        }
+                    }
+                }`,
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.users;
+                    expect(resp).toBeInstanceOf(Array);
+                    expect(resp[0]).toHaveProperty('_id');
+                    expect(resp[0]).toHaveProperty('username');
+                    expect(resp[0]).toHaveProperty('email');
+                    expect(resp[0]).toHaveProperty('profile_color');
+                    expect(resp[0]).not.toHaveProperty('password');
+                    expect(resp[0]).not.toHaveProperty('role');
+                    resolve(resp);
+                }
+            });
+    });
+};
+
+// Get Single test
+const getSingleUser = (
+    url: string | Function,
+    _id: string
+): Promise<UserTest> => {
+    return new Promise((resolve, reject) => {
+        request(url)
+            .post('/graphql')
+            .set('Content-type', 'application/json')
+            .send({
+                query: 
+                    `query user($_id: ID!) {
+                        user(_id: $_id) {
+                            _id
+                            username
+                            email
+                            nickname
+                            profile_color
+                            favorite_song {
+                                _id
+                            }
+                            favorite_album {
+                                _id
+                            }
+                        }
+                    }`,
+                variables: {
+                    _id: _id
+                },
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.user;
+                    expect(resp._id).toBe(_id);
+                    expect(resp).toHaveProperty('username');
+                    expect(resp).toHaveProperty('email');
+                    expect(resp).toHaveProperty('profile_color');
+                    expect(resp).not.toHaveProperty('password');
+                    expect(resp).not.toHaveProperty('role');
+                    resolve(resp);
+                }
+            });
+    });
+};
+
+// Get by matching usernames test
+const getUserByName = (
+    url: string | Function,
+    username: string
+): Promise<UserTest> => {
+    return new Promise((resolve, reject) => {
+        request(url)
+            .post('/graphql')
+            .set('Content-type', 'application/json')
+            .send({
+                query: 
+                    `query userSearch($username: String!) {
+                        userSearch(username: $username) {
+                            _id
+                            username
+                            email
+                            nickname
+                            profile_color
+                            favorite_song {
+                                _id
+                            }
+                            favorite_album {
+                                _id
+                            }
+                        }
+                    }`,
+                variables: {
+                    username: username
+                },
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.userSearch;
+                    expect(resp[0]).toHaveProperty('_id');
+                    expect(resp[0]).toHaveProperty('username');
+                    expect(resp[0]).toHaveProperty('email');
+                    expect(resp[0]).toHaveProperty('profile_color');
+                    expect(resp[0]).not.toHaveProperty('password');
+                    expect(resp[0]).not.toHaveProperty('role');
+                    resolve(resp);
+                }
+            });
+    });
+};
+
+export { userRegister, userLogin, userElevate, userUpdate, userUpdateByID, userDelete, userDeleteByID, getUsers, getSingleUser, getUserByName }

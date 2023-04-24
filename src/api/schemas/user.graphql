@@ -34,13 +34,28 @@ input UserModify {
     favorite_album: ID
 }
 
+input AdminModify {
+    username: String
+    email: String
+    password: String
+    nickname: String
+    profile_color: String
+    favorite_song: String
+    favorite_album: String
+}
+
 type Query {
     users: [User]
+    userSearch(username: String!): [User]
+    user(_id: ID!): User
 }
 
 type Mutation {
     register(user: UserInput!): TokenMessage
     login(credentials: Credentials!): TokenMessage
-    elevatePriviledges(_id: ID!, role: String!): TokenMessage
     userUpdate(user: UserModify!): TokenMessage
+    userUpdateByID(_id: ID!, user: AdminModify!): TokenMessage
+    userChangeRole(_id: ID!, role: String!): TokenMessage
+    userDelete: TokenMessage
+    userDeleteByID(_id: ID!): TokenMessage
 }

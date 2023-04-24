@@ -11,8 +11,10 @@ export { salt };
 
 // Get the database uri
 const dbUri = process.env.DATABASE_URL;
-if (!dbUri) {
-  throw Error('Database URI undefined');
+
+// Get the database uri
+if (!dbUri || !process.env.JWT_SECRET || !process.env.ROOT_EMAIL || !process.env.ROOT_PWD) {
+  throw Error('environmental variables undefined');
 }
 
 // Get/Set the listening port
@@ -35,9 +37,9 @@ const rootUser = async () => {
     // Validate the root
     const result = await userModel.create(user);
     if (result) {
-      console.log('Root user created');
+      console.log('root user created');
     } else {
-      throw new Error(`Could not create a root user`);
+      throw new Error(`could not create a root user`);
     }
   }
 }

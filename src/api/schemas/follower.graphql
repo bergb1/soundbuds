@@ -1,0 +1,20 @@
+type Follow {
+    user: ID!
+    target: ID!
+}
+
+type DeleteMessage {
+    acknowledged: Boolean
+    deletedCount: Int
+}
+
+type Query {
+    followers: [ID]
+    following: [ID]
+    followMutuals: [ID]
+}
+
+type Mutation {
+    followAdd(target_id: ID!): Follow
+    followRemove(target_id: ID!): DeleteMessage
+}
