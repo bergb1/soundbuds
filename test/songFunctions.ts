@@ -195,7 +195,7 @@ const songGetAll = (
                     expect(resp[0]._id).toBeDefined();
                     expect(resp[0].name).toBeDefined();
                     expect(resp[0].cover).toBeDefined();
-                    expect(resp[0].creator).toBeDefined();
+                    expect(resp[0].creator?._id).toBeDefined();
                     resolve(resp);
                 }
             });
@@ -241,7 +241,7 @@ const songGet = (
                     expect(resp._id).toBeDefined();
                     expect(resp.name).toBeDefined();
                     expect(resp.cover).toBeDefined();
-                    expect(resp.creator).toBeDefined();
+                    expect(resp.creator?._id).toBeDefined();
                     resolve(resp);
                 }
             });
@@ -288,7 +288,7 @@ const songSearch = (
                     expect(resp[0]._id).toBeDefined();
                     expect(resp[0].name).toBeDefined();
                     expect(resp[0].cover).toBeDefined();
-                    expect(resp[0].creator).toBeDefined();
+                    expect(resp[0].creator?._id).toBeDefined();
                     resolve(resp);
                 }
             });
