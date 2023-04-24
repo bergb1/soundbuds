@@ -63,7 +63,7 @@ export default {
                 .findById(args._id)
                 .select('-__v -password -role');
         },
-        usersByName: async (
+        userSearch: async (
             _parent: unknown,
             args: {username: string}
         ) => {

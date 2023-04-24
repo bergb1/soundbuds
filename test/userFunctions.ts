@@ -410,8 +410,8 @@ const getUserByName = (
             .set('Content-type', 'application/json')
             .send({
                 query: 
-                    `query usersByName($username: String!) {
-                        usersByName(username: $username) {
+                    `query userSearch($username: String!) {
+                        userSearch(username: $username) {
                             _id
                             username
                             email
@@ -433,7 +433,7 @@ const getUserByName = (
                 if (err) {
                     reject(err);
                 } else {
-                    const resp = response.body.data.usersByName;
+                    const resp = response.body.data.userSearch;
                     expect(resp[0]).toHaveProperty('_id');
                     expect(resp[0]).toHaveProperty('username');
                     expect(resp[0]).toHaveProperty('email');
