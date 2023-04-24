@@ -32,7 +32,9 @@ const songCreate = (
     token: string
 ): Promise<SongTest> => {
     return new Promise((resolve, reject) => {
-
+        request(url)
+            .post('/graphql')
+            .set('Authorization', 'Bearer ' + token)
     });
 }
 
@@ -42,7 +44,9 @@ const songUpdate = (
     token: string
 ): Promise<SongTest> => {
     return new Promise((resolve, reject) => {
-
+        request(url)
+            .post('/graphql')
+            .set('Authorization', 'Bearer ' + token)
     });
 }
 
@@ -52,7 +56,9 @@ const songDelete = (
     token: string
 ): Promise<boolean> => {
     return new Promise((resolve, reject) => {
-
+        request(url)
+            .post('/graphql')
+            .set('Authorization', 'Bearer ' + token)
     });
 }
 
@@ -61,7 +67,8 @@ const songGetAll = (
     url: string | Function,
 ): Promise<SongTest[]> => {
     return new Promise((resolve, reject) => {
-
+        request(url)
+            .post('/graphql')
     });
 }
 
@@ -70,7 +77,8 @@ const songGet = (
     url: string | Function,
 ): Promise<SongTest> => {
     return new Promise((resolve, reject) => {
-
+        request(url)
+            .post('/graphql')
     });
 }
 
@@ -79,7 +87,8 @@ const songSearch = (
     url: string | Function,
 ): Promise<SongTest[]> => {
     return new Promise((resolve, reject) => {
-
+        request(url)
+            .post('/graphql')
     });
 }
 
