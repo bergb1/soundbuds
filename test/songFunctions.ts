@@ -190,10 +190,8 @@ const songGetAll = (
                 if (err) {
                     reject(err);
                 } else {
-                    const resp = response.body.data.SongDelete as SongTest[];
-                    expect(resp).toBeInstanceOf(Array);
+                    const resp = response.body.data.songs as SongTest[];
                     expect(resp.length).toBeGreaterThan(0);
-                    expect(resp[0]).toBeDefined();
                     expect(resp[0]._id).toBeDefined();
                     expect(resp[0].name).toBeDefined();
                     expect(resp[0].cover).toBeDefined();
@@ -214,16 +212,37 @@ const songGet = (
             .post('/graphql')
             .send({
                 query:
-                    ``,
+                    `query Query($id: ID!) {
+                        songGet(_id: $id) {
+                            _id
+                            name
+                            cover
+                            description
+                            creator {
+                                _id
+                                username
+                                nickname
+                            }
+                            album {
+                                _id
+                                name
+                            }
+                        }
+                    }`,
                 variables: {
-
+                    id: args._id
                 }
             })
             .expect(200, (err, response) => {
                 if (err) {
                     reject(err);
                 } else {
-                    // resolve
+                    const resp = response.body.data.songGet as SongTest;
+                    expect(resp._id).toBeDefined();
+                    expect(resp.name).toBeDefined();
+                    expect(resp.cover).toBeDefined();
+                    expect(resp.creator).toBeDefined();
+                    resolve(resp);
                 }
             });
     });
@@ -239,16 +258,38 @@ const songSearch = (
             .post('/graphql')
             .send({
                 query:
-                    ``,
+                    `query Query($name: String!) {
+                        songSearch(name: $name) {
+                            _id
+                            name
+                            cover
+                            description
+                            creator {
+                                _id
+                                username
+                                nickname
+                            }
+                            album {
+                                _id
+                                name
+                            }
+                        }
+                    }`,
                 variables: {
-
+                    name: args.name
                 }
             })
             .expect(200, (err, response) => {
                 if (err) {
                     reject(err);
                 } else {
-                    // resolve
+                    const resp = response.body.data.songSearch as SongTest[];
+                    expect(resp.length).toBeGreaterThan(0);
+                    expect(resp[0]._id).toBeDefined();
+                    expect(resp[0].name).toBeDefined();
+                    expect(resp[0].cover).toBeDefined();
+                    expect(resp[0].creator).toBeDefined();
+                    resolve(resp);
                 }
             });
     });
