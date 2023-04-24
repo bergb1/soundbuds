@@ -15,10 +15,19 @@ input SongInput {
     album: ID
 }
 
+input SongUpdate {
+    name: String
+    cover: String
+    description: String
+    album: ID
+}
+
 type Query {
     songs: [Song]
 }
 
 type Mutation {
-    songCreate(song: SongInput): Song
+    songCreate(song: SongInput!): Song
+    songUpdate(song: SongUpdate!): Song
+    songDelete(name: String!): Int
 }
