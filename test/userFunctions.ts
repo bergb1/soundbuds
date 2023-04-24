@@ -440,7 +440,7 @@ const getUserByName = (
                     expect(resp[0]).toHaveProperty('profile_color');
                     expect(resp[0]).not.toHaveProperty('password');
                     expect(resp[0]).not.toHaveProperty('role');
-                    resolve(resp);
+                    resolve(resp[0]);
                 }
             });
     });

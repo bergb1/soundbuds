@@ -6,7 +6,7 @@ import { getSingleUser, getUserByName, getUsers, userDelete, userDeleteByID, use
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 import userModel from '../src/api/models/userModel';
 import { followMutuals, followUser, followerRelationsRemoved, followers, following, unfollowUser } from './followFunctions';
-import { coverUpload } from './songFunctions';
+import { coverUpload, songCreate, songDelete, songGet, songGetAll, songSearch, songUpdate } from './songFunctions';
 
 describe('Testing graphql api', () => {
     // Test not found
@@ -138,12 +138,17 @@ describe('Testing graphql api', () => {
 
     // Create song test
     it('should create a song', async () => {
-
+        await songCreate(app, testCreatorData.token!);
     });
 
     // Update song test
-    it(`Should update a song`, async () => {
+    it(`should update a song`, async () => {
+        await songUpdate(app, testCreatorData.token!);
+    });
 
+    // Song mutation as admin test
+    it(`should update a song as an admin`, async () => {
+        await songUpdate(app, testAdminData.token!);
     });
 
     // Upload album cover test
@@ -188,22 +193,22 @@ describe('Testing graphql api', () => {
 
     // Get all songs
     it(`should get all songs`, async () => {
-
+        await songGetAll(app);
     });
 
     // Should get one song
     it(`should get one song`, async () => {
-        
+        await songGet(app);
     });
 
     // Search for song test
     it(`should find all songs with an 'e' in it`, async () => {
-
+        await songSearch(app);
     });
 
     // Should delete a song
     it(`should delete a song`, async () => {
-
+        await songDelete(app, testCreatorData.token!);
     });
 
     // User delete
