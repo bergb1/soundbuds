@@ -5,13 +5,14 @@ import { Song, SongTest } from '../src/interfaces/Song';
 // Upload cover test
 const coverUpload = (
     url: string | Function,
-    path: string, token: string
+    token: string,
+    args: {path: string}
 ): Promise<UploadMessageResponse> => {
     return new Promise((resolve, reject) => {
         request(url)
             .post('/api/upload')
             .set('Authorization', 'Bearer ' + token)
-            .attach('cover', 'test/' + path)
+            .attach('cover', 'test/' + args.path)
             .expect(200, (err, response) => {
                 if (err) {
                     reject(err);
@@ -29,12 +30,50 @@ const coverUpload = (
 // Create song test
 const songCreate = (
     url: string | Function,
-    token: string
+    token: string,
+    args: {song: SongTest}
 ): Promise<SongTest> => {
     return new Promise((resolve, reject) => {
         request(url)
             .post('/graphql')
             .set('Authorization', 'Bearer ' + token)
+            .send({
+                query: 
+                    `mutation SongCreate($song: SongInput!) {
+                        songCreate(song: $song) {
+                            _id
+                            name
+                            cover
+                            description
+                            creator {
+                                _id
+                                username
+                                nickname
+                            }
+                            album {
+                                _id
+                                name
+                            }
+                        }
+                    }`
+                , variables: {
+                    song: args.song
+                }
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.SongCreate;
+                    expect(resp._id).toBeDefined();
+                    expect(resp.name).toBe(args.song.name);
+                    expect(resp.cover).toBe(args.song.cover);
+                    expect(resp.description).toBe(args.song.description);
+                    expect(resp.creator).toBeDefined();
+                    expect(resp.album).toBe(args.song.album);
+                    resolve(resp);
+                }
+            });
     });
 }
 

@@ -7,6 +7,7 @@ import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 import userModel from '../src/api/models/userModel';
 import { followMutuals, followUser, followerRelationsRemoved, followers, following, unfollowUser } from './followFunctions';
 import { coverUpload, songCreate, songDelete, songGet, songGetAll, songSearch, songUpdate } from './songFunctions';
+import { SongTest } from '../src/interfaces/Song';
 
 describe('Testing graphql api', () => {
     // Test not found
@@ -132,17 +133,27 @@ describe('Testing graphql api', () => {
     });
 
     // Upload song cover test
-    it('should upload a cover image for a song or album', async () => {
-        await coverUpload(app, 'cover1.jpg', testCreatorData.token!);
+    let songCover: string;
+    it('should upload a cover image for a song', async () => {
+        songCover = (await coverUpload(app, testCreatorData.token!, {
+            path: 'cover1.jpg'
+        })).data.filename;
     });
 
     // Create song test
+    let testSong1: SongTest;
     it('should create a song', async () => {
-        await songCreate(app, testCreatorData.token!);
+        testSong1 = await songCreate(app, testCreatorData.token!, {
+            song: {
+                name: 'Heavy Metal',
+                cover: songCover
+            }
+        });
     });
 
     // Update song test
     it(`should update a song`, async () => {
+        testSong1.description = 'Heavy metal music for heavy metal fans.';
         await songUpdate(app, testCreatorData.token!);
     });
 
@@ -152,8 +163,10 @@ describe('Testing graphql api', () => {
     });
 
     // Upload album cover test
-    it('should upload a cover image for a song or album', async () => {
-        await coverUpload(app, 'cover2.jpg', testCreatorData.token!);
+    it('should upload a cover image for an album', async () => {
+        await coverUpload(app, testCreatorData.token!, {
+            path: 'cover2.jpg'
+        });
     });
 
     // Follow test

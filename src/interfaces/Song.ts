@@ -10,7 +10,9 @@ interface Song {
 }
 
 // Song interface with optional fields for testing
-interface SongTest extends Partial<Song> {}
+interface SongTest extends Partial<Song> {
+    _id?: string
+}
 
 // Song for database interactions
 interface SongDatabase extends Song, Document {}
