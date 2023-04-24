@@ -8,21 +8,9 @@ import CustomError from '../../classes/CustomError';
 import { UserIdWithToken } from '../../interfaces/User';
 import auth from '../../auth';
 
-const fileFilter = (
-  request: Request,
-  file: Express.Multer.File,
-  cb: FileFilterCallback
-) => {
-  if (file.mimetype.includes('image')) {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
-};
-
 const authorizeUpload = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) => {
   const userFromToken = await auth(req);
@@ -34,9 +22,23 @@ const authorizeUpload = async (
   next();
 }
 
+const fileFilter = (
+  _request: Request,
+  file: Express.Multer.File,
+  cb: FileFilterCallback
+) => {
+  if (file.mimetype.includes('image')) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+const upload = multer({dest: './uploads/', fileFilter});
+
 const makeThumbnail = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) => {
   try {
@@ -54,7 +56,7 @@ const makeThumbnail = async (
 
 const removeOriginal = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) => {
   try {
@@ -67,7 +69,6 @@ const removeOriginal = async (
   }
 }
 
-const upload = multer({dest: './uploads/', fileFilter});
 const router = express.Router();
 
 router
