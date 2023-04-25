@@ -117,9 +117,9 @@ export default {
             // Validate the response
             if (!song) {
                 throw new GraphQLError('song not updated');
+            } else {
+                return song;
             }
-
-            return song;
         },
         songDelete: async (
             _parent: undefined,

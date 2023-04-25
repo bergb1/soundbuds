@@ -70,7 +70,11 @@ const albumUpdate = (
                     }`,
                 variables: {
                     id: args._id,
-                    album: args.album
+                    album: {
+                        name: args.album.name,
+                        cover: args.album.cover,
+                        description: args.album.description
+                    }
                 }
             })
             .expect(200, (err, response) => {
@@ -168,7 +172,7 @@ const albumGet = (
             .send({
                 query: 
                     `query Query($id: ID!) {
-                        ablum(_id: $id) {
+                        album(_id: $id) {
                             _id
                             name
                             cover

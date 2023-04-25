@@ -20,7 +20,7 @@ input AlbumUpdate {
 
 type Query {
     albums: [Album]
-    ablum(_id: ID!): Album
+    album(_id: ID!): Album
     albumSearch(name: String!): [Album]
 }
 

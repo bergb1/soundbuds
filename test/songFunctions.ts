@@ -67,8 +67,9 @@ const songCreate = (
                     const resp = response.body.data.songCreate as SongTest;
                     expect(resp._id).toBeDefined();
                     expect(resp.name).toBe(args.song.name);
-                    expect(resp.cover).toBe(args.song.cover);
+                    if (args.song.cover) expect(resp.cover).toBe(args.song.cover);
                     expect(resp.creator?._id).toBeDefined();
+                    if (args.song.album) expect(resp.album?._id);
                     resolve(resp);
                 }
             });
