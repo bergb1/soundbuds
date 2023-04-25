@@ -18,7 +18,7 @@ const coverPost = async (
         const output: UploadMessageResponse = {
             message: 'cover uploaded',
             data: {
-                filename: req.file.filename
+                filename: `${req.file.filename}_thumb`
             }
         }
         res.json(output);

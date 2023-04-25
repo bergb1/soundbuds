@@ -7,7 +7,7 @@ import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 import userModel from '../src/api/models/userModel';
 import { followMutuals, followUser, followerRelationsRemoved, followers, following, unfollowUser } from './followFunctions';
 import { coverUpload, songCreate, songDelete, songGet, songGetAll, songSearch, songUpdate } from './songFunctions';
-import { SongTest } from '../src/interfaces/Song';
+import { Song, SongTest } from '../src/interfaces/Song';
 
 describe('Testing graphql api', () => {
     // Test not found
@@ -155,6 +155,7 @@ describe('Testing graphql api', () => {
     it(`should update a song`, async () => {
         testSong1.description = 'Heavy metal music for heavy metal fans.';
         testSong1 = await songUpdate(app, testCreatorData.token!, {
+            _id: testSong1._id!,
             song: testSong1
         });
     });
@@ -163,6 +164,7 @@ describe('Testing graphql api', () => {
     it(`should update a song as an admin`, async () => {
         testSong1.name = 'Death Metal';
         testSong1 = await songUpdate(app, testAdminData.token!, {
+            _id: testSong1._id!,
             song: testSong1
         });
     });

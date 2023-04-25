@@ -79,7 +79,7 @@ const songCreate = (
 const songUpdate = (
     url: string | Function,
     token: string,
-    args: { song: SongTest }
+    args: { _id: string, song: SongTest }
 ): Promise<SongTest> => {
     return new Promise((resolve, reject) => {
         request(url)
@@ -96,7 +96,6 @@ const songUpdate = (
                             creator {
                                 _id
                                 username
-                                nickname
                             }
                             album {
                                 _id
@@ -105,7 +104,13 @@ const songUpdate = (
                         }
                     }`,
                 variables: {
-                    song: args.song
+                    id: args._id,
+                    song: {
+                        name: args.song.name,
+                        cover: args.song.cover,
+                        description: args.song.description,
+                        album: args.song.album
+                    }
                 }
             })
             .expect(200, (err, response) => {
@@ -113,7 +118,7 @@ const songUpdate = (
                     reject(err);
                 } else {
                     const resp = response.body.data.songUpdate as SongTest;
-                    expect(resp._id).toBe(args.song._id);
+                    expect(resp._id).toBe(args._id);
                     expect(resp.name).toBe(args.song.name);
                     expect(resp.cover).toBe(args.song.cover);
                     expect(resp.creator?._id).toBeDefined();
@@ -187,7 +192,6 @@ const songGetAll = (
                     reject(err);
                 } else {
                     const resp = response.body.data.songs as SongTest[];
-                    console.log(resp);
                     expect(resp.length).toBeGreaterThan(0);
                     expect(resp[0]._id).toBeDefined();
                     expect(resp[0].name).toBeDefined();

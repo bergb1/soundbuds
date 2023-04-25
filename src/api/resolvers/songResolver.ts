@@ -71,7 +71,30 @@ export default {
             },
             user: UserIdWithToken
         ) => {
-                
+            if (!user.token) {
+                throw new GraphQLError('not logged in');
+            }
+
+            // Find the instance            
+            const target_song = await songModel.findById(args._id);
+            if (!target_song) {
+                throw new GraphQLError('song not found');
+            }
+
+            // Check privileges
+            if (['admin', 'root'].indexOf(user.role) === -1 && !target_song.creator._id.equals(user._id)) {
+                throw new GraphQLError('request not authorized');
+            }
+
+            // Execute the request
+            const song = await songModel.findByIdAndUpdate(args._id, args.song, { new: true });
+
+            // Validate the response
+            if (!song) {
+                throw new GraphQLError('song not updated');
+            }
+
+            return song;
         },
         songDelete: async (
             _parent: undefined,
