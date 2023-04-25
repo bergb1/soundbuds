@@ -1,46 +1,20 @@
 import request from 'supertest';
-import UploadMessageResponse from '../src/interfaces/UploadMessageResponse';
-import { Song, SongTest } from '../src/interfaces/Song';
+import { Album, AlbumTest } from '../src/interfaces/Album';
 
-// Upload cover test
-const coverUpload = (
+// Create album test
+const albumCreate = (
     url: string | Function,
     token: string,
-    args: { path: string }
-): Promise<UploadMessageResponse> => {
-    return new Promise((resolve, reject) => {
-        request(url)
-            .post('/api/upload')
-            .set('Authorization', 'Bearer ' + token)
-            .attach('cover', 'test/' + args.path)
-            .expect(200, (err, response) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    const resp = response.body;
-                    expect(resp).toHaveProperty('message');
-                    expect(resp).toHaveProperty('data');
-                    expect(resp.data).toHaveProperty('filename');
-                    resolve(resp);
-                }
-            });
-    });
-}
-
-// Create song test
-const songCreate = (
-    url: string | Function,
-    token: string,
-    args: { song: SongTest }
-): Promise<SongTest> => {
+    args: { album: AlbumTest }
+): Promise<AlbumTest> => {
     return new Promise((resolve, reject) => {
         request(url)
             .post('/graphql')
             .set('Authorization', 'Bearer ' + token)
             .send({
                 query: 
-                    `mutation SongCreate($song: SongInput!) {
-                        songCreate(song: $song) {
+                    `mutation AlbumCreate($album: AlbumInput!) {
+                        albumCreate(album: $album) {
                             _id
                             name
                             cover
@@ -48,48 +22,42 @@ const songCreate = (
                             creator {
                                 _id
                                 username
-                                nickname
-                            }
-                            album {
-                                _id
-                                name
                             }
                         }
                     }`,
                 variables: {
-                    song: args.song
+                    album: args.album
                 }
             })
             .expect(200, (err, response) => {
                 if (err) {
                     reject(err);
                 } else {
-                    const resp = response.body.data.songCreate as SongTest;
+                    const resp = response.body.data.albumCreate as AlbumTest;
                     expect(resp._id).toBeDefined();
-                    expect(resp.name).toBe(args.song.name);
-                    if (args.song.cover) expect(resp.cover).toBe(args.song.cover);
-                    expect(resp.creator?._id).toBeDefined();
-                    if (args.song.album) expect(resp.album?._id);
+                    expect(resp.name).toBe(args.album.name);
+                    expect(resp.cover).toBe(args.album.cover);
+                    expect(resp.creator).toBeDefined();
                     resolve(resp);
                 }
             });
     });
 }
 
-// Update song test
-const songUpdate = (
+// Update album test
+const albumUpdate = (
     url: string | Function,
     token: string,
-    args: { _id: string, song: SongTest }
-): Promise<SongTest> => {
+    args: { _id: string, album: AlbumTest }
+): Promise<AlbumTest> => {
     return new Promise((resolve, reject) => {
         request(url)
             .post('/graphql')
             .set('Authorization', 'Bearer ' + token)
             .send({
                 query: 
-                    `mutation SongUpdate($id: ID!, $song: SongUpdate!) {
-                        songUpdate(_id: $id, song: $song) {
+                    `mutation AlbumUpdate($id: ID!, $album: AlbumUpdate!) {
+                        albumUpdate(_id: $id, album: $album) {
                             _id
                             name
                             cover
@@ -98,19 +66,14 @@ const songUpdate = (
                                 _id
                                 username
                             }
-                            album {
-                                _id
-                                name
-                            }
                         }
                     }`,
                 variables: {
                     id: args._id,
-                    song: {
-                        name: args.song.name,
-                        cover: args.song.cover,
-                        description: args.song.description,
-                        album: args.song.album
+                    album: {
+                        name: args.album.name,
+                        cover: args.album.cover,
+                        description: args.album.description
                     }
                 }
             })
@@ -118,19 +81,19 @@ const songUpdate = (
                 if (err) {
                     reject(err);
                 } else {
-                    const resp = response.body.data.songUpdate as SongTest;
-                    expect(resp._id).toBe(args._id);
-                    expect(resp.name).toBe(args.song.name);
-                    expect(resp.cover).toBe(args.song.cover);
-                    expect(resp.creator?._id).toBeDefined();
+                    const resp = response.body.data.albumUpdate as AlbumTest;
+                    expect(resp._id).toBeDefined();
+                    if (args.album.name) expect(resp.name).toBe(args.album.name);
+                    if (args.album.description) expect(resp.description).toBe(args.album.description);
+                    if (args.album.cover) expect(resp.cover).toBe(args.album.cover);
                     resolve(resp);
                 }
             });
     });
 }
 
-// Delete song test
-const songDelete = (
+// Delete album test
+const albumDelete = (
     url: string | Function,
     token: string,
     args: { _id: string }
@@ -140,9 +103,9 @@ const songDelete = (
             .post('/graphql')
             .set('Authorization', 'Bearer ' + token)
             .send({
-                query:
-                    `mutation SongDelete($id: ID!) {
-                        songDelete(_id: $id)
+                query: 
+                    `mutation AlbumDelete($id: ID!) {
+                        albumDelete(_id: $id)
                     }`,
                 variables: {
                     id: args._id
@@ -152,8 +115,7 @@ const songDelete = (
                 if (err) {
                     reject(err);
                 } else {
-                    const resp = response.body.data.songDelete as boolean;
-                    expect(resp).toBeDefined();
+                    const resp = response.body.data.albumDelete as boolean;
                     expect(resp).toBe(true);
                     resolve(resp);
                 }
@@ -161,17 +123,17 @@ const songDelete = (
     });
 }
 
-// Get all songs test
-const songGetAll = (
+// Get all albums test
+const albumGetAll = (
     url: string | Function,
-): Promise<SongTest[]> => {
+): Promise<AlbumTest[]> => {
     return new Promise((resolve, reject) => {
         request(url)
             .post('/graphql')
             .send({
-                query:
+                query: 
                     `query Query {
-                        songs {
+                        albums {
                             _id
                             name
                             cover
@@ -179,11 +141,6 @@ const songGetAll = (
                             creator {
                                 _id
                                 username
-                                nickname
-                            }
-                            album {
-                                _id
-                                name
                             }
                         }
                     }`
@@ -192,7 +149,7 @@ const songGetAll = (
                 if (err) {
                     reject(err);
                 } else {
-                    const resp = response.body.data.songs as SongTest[];
+                    const resp = response.body.data.albums as AlbumTest[];
                     expect(resp.length).toBeGreaterThan(0);
                     expect(resp[0]._id).toBeDefined();
                     expect(resp[0].name).toBeDefined();
@@ -204,18 +161,18 @@ const songGetAll = (
     });
 }
 
-// Get song test
-const songGet = (
+// Get album test
+const albumGet = (
     url: string | Function,
     args: { _id: string }
-): Promise<SongTest> => {
+): Promise<AlbumTest> => {
     return new Promise((resolve, reject) => {
         request(url)
             .post('/graphql')
             .send({
-                query:
+                query: 
                     `query Query($id: ID!) {
-                        song(_id: $id) {
+                        album(_id: $id) {
                             _id
                             name
                             cover
@@ -223,11 +180,6 @@ const songGet = (
                             creator {
                                 _id
                                 username
-                                nickname
-                            }
-                            album {
-                                _id
-                                name
                             }
                         }
                     }`,
@@ -239,7 +191,7 @@ const songGet = (
                 if (err) {
                     reject(err);
                 } else {
-                    const resp = response.body.data.song as SongTest;
+                    const resp = response.body.data.album as AlbumTest;
                     expect(resp._id).toBeDefined();
                     expect(resp.name).toBeDefined();
                     expect(resp.cover).toBeDefined();
@@ -250,18 +202,18 @@ const songGet = (
     });
 }
 
-// Search for songs test
-const songSearch = (
+// Search for albums test
+const albumSearch = (
     url: string | Function,
     args: { name: string }
-): Promise<SongTest[]> => {
+): Promise<AlbumTest[]> => {
     return new Promise((resolve, reject) => {
         request(url)
             .post('/graphql')
             .send({
                 query:
                     `query Query($name: String!) {
-                        songSearch(name: $name) {
+                        albumSearch(name: $name) {
                             _id
                             name
                             cover
@@ -269,11 +221,6 @@ const songSearch = (
                             creator {
                                 _id
                                 username
-                                nickname
-                            }
-                            album {
-                                _id
-                                name
                             }
                         }
                     }`,
@@ -285,7 +232,7 @@ const songSearch = (
                 if (err) {
                     reject(err);
                 } else {
-                    const resp = response.body.data.songSearch as SongTest[];
+                    const resp = response.body.data.albumSearch as AlbumTest[];
                     expect(resp.length).toBeGreaterThan(0);
                     expect(resp[0]._id).toBeDefined();
                     expect(resp[0].name).toBeDefined();
@@ -297,4 +244,4 @@ const songSearch = (
     });
 }
 
-export { coverUpload, songCreate, songUpdate, songDelete, songGetAll, songGet, songSearch }
+export { albumCreate, albumUpdate, albumDelete, albumGetAll, albumGet, albumSearch }

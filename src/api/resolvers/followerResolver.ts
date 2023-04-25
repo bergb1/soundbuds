@@ -111,3 +111,11 @@ export default {
         }
     }
 };
+
+const followerUserDelete = async (user_id: string) => {
+    // Delete all albums created by the user
+    await followerModel.deleteMany({ user: user_id });
+    await followerModel.deleteMany({ target: user_id });
+}
+
+export { followerUserDelete }

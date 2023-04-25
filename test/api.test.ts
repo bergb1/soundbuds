@@ -6,7 +6,11 @@ import { getSingleUser, getUserByName, getUsers, userDelete, userDeleteByID, use
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 import userModel from '../src/api/models/userModel';
 import { followMutuals, followUser, followerRelationsRemoved, followers, following, unfollowUser } from './followFunctions';
-import { coverUpload } from './songFunctions';
+import { coverUpload, songCreate, songDelete, songGet, songGetAll, songSearch, songUpdate } from './songFunctions';
+import { Song, SongTest } from '../src/interfaces/Song';
+import { albumCreate, albumDelete, albumGet, albumGetAll, albumSearch, albumUpdate } from './albumFunctions';
+import { AlbumTest } from '../src/interfaces/Album';
+import { Types } from 'mongoose';
 
 describe('Testing graphql api', () => {
     // Test not found
@@ -132,28 +136,75 @@ describe('Testing graphql api', () => {
     });
 
     // Upload song cover test
-    it('should upload a cover image for a song or album', async () => {
-        await coverUpload(app, 'cover1.jpg', testCreatorData.token!);
+    let songCover: string;
+    it('should upload a cover image for a song', async () => {
+        songCover = (await coverUpload(app, testCreatorData.token!, {
+            path: 'cover1.jpg'
+        })).data.filename;
     });
 
     // Create song test
+    let testSong1: SongTest;
     it('should create a song', async () => {
+        testSong1 = await songCreate(app, testCreatorData.token!, {
+            song: {
+                name: 'Heavy Metal',
+                cover: songCover
+            }
+        });
+    });
 
+    // Update song test
+    it(`should update a song`, async () => {
+        testSong1.description = 'Heavy metal music for heavy metal fans.';
+        testSong1 = await songUpdate(app, testCreatorData.token!, {
+            _id: testSong1._id!,
+            song: testSong1
+        });
+    });
+
+    // Song mutation as admin test
+    it(`should update a song as an admin`, async () => {
+        testSong1.name = 'Death Metal';
+        testSong1 = await songUpdate(app, testAdminData.token!, {
+            _id: testSong1._id!,
+            song: testSong1
+        });
+    });
+
+    let testAlbum: AlbumTest;
+    it(`should create an album`, async () => {
+        testAlbum = await albumCreate(app, testCreatorData.token!, {
+            album: {
+                name: 'Techno',
+                cover: songCover
+            }
+        });
+    });
+
+    let testSong2: SongTest;
+    it(`should create a song in an album`, async () => {
+        testSong2 = await songCreate(app, testCreatorData.token!, {
+            song: {
+                name: 'Techno Hit #1',
+                album: new Types.ObjectId(testAlbum._id)
+            }
+        });
     });
 
     // Upload album cover test
-    it('should upload a cover image for a song or album', async () => {
-        await coverUpload(app, 'cover2.jpg', testCreatorData.token!);
+    it('should upload a cover image for an album', async () => {
+        songCover = (await coverUpload(app, testCreatorData.token!, {
+            path: 'cover2.jpg'
+        })).data.filename;
     });
 
-    // Create album test
-    it('should create an album', async () => {
-
-    });
-
-    // Create song with album test
-    it('should create a song by using the cover of an album', async () => {
-
+    it(`should modify the cover of the album and it's songs`, async () => {
+        testAlbum.cover = songCover;
+        testAlbum = await albumUpdate(app, testCreatorData.token!, {
+            _id: testAlbum._id!,
+            album: testAlbum
+        });
     });
 
     // Follow test
@@ -191,23 +242,71 @@ describe('Testing graphql api', () => {
         await unfollowUser(app, testCreator._id!, testUserData.token!);
     });
 
+    // Get all songs
+    it(`should get all songs`, async () => {
+        await songGetAll(app);
+    });
+
+    // Should get one song
+    it(`should get one song`, async () => {
+        await songGet(app, {
+            _id: testSong1._id!
+        });
+    });
+
+    // Search for song test
+    it(`should find all songs with an 'e' in it`, async () => {
+        await songSearch(app, {
+            name: 'e'
+        });
+    });
+
+    it(`should return all albums`, async () => {
+        await albumGetAll(app);
+    });
+
+    it(`should return one album`, async () => {
+        await albumGet(app, {
+            _id: testAlbum._id!
+        });
+    });
+
+    it(`should search all albums with an 'e' in the name`, async () => {
+        await albumSearch(app, {
+            name: 'e'
+        });
+    });
+
+    it(`should delete the album`, async () => {
+        await albumDelete(app, testCreatorData.token!, {
+            _id: testAlbum._id!
+        });
+    });
+
+    // Should delete a song
+    it(`should delete a song`, async () => {
+        await songDelete(app, testCreatorData.token!, {
+            _id: testSong1._id!
+        });
+    });
+
     // User delete
-    it(`Should delete the user`, async () => {
+    it(`should delete the user`, async () => {
         await userDelete(app, testUserData.token!);
     });
 
     // User delete by ID
-    it(`Should delete the admin as the root`, async () => {
+    it(`should delete the admin as the root`, async () => {
         await userDeleteByID(app, testAdmin._id!, rootUserData.token!);
     });
 
-    // Dependencies test
-    it(`should find no followers for the creator's ID`, async () => {
-        await followerRelationsRemoved(app, testCreatorData.token!);
-    })
-
     // User delete by ID
-    it(`Should delete the creator as an admin`, async () => {
+    it(`should delete the creator as an admin`, async () => {
         await userDeleteByID(app, testCreator._id!, testAdminData.token!);
+    });
+
+    // Dependencies test
+    it(`should find zero instances with deleted dependencies`, async () => {
+        await followerRelationsRemoved(app, testCreatorData.token!);
     });
 });

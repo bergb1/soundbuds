@@ -9,7 +9,9 @@ interface Album {
 }
 
 // Song interface with optional fields for testing
-interface AlbumTest extends Partial<Album> {}
+interface AlbumTest extends Partial<Album> {
+    _id?: string
+}
 
 // Song for database interactions
 interface AlbumDatabase extends Album, Document {}

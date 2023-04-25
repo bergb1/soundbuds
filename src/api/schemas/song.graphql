@@ -9,9 +9,8 @@ type Song {
 
 input SongInput {
     name: String!
-    cover: String!
+    cover: String
     description: String
-    creator: ID!
     album: ID
 }
 
@@ -24,7 +23,7 @@ input SongUpdate {
 
 type Query {
     songs: [Song]
-    songGet(_id: ID!): Song
+    song(_id: ID!): Song
     songSearch(name: String!): [Song]
 }
 
