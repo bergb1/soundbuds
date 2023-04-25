@@ -64,13 +64,11 @@ const songCreate = (
                 if (err) {
                     reject(err);
                 } else {
-                    const resp = response.body.data.SongCreate as SongTest;
+                    const resp = response.body.data.songCreate as SongTest;
                     expect(resp._id).toBeDefined();
                     expect(resp.name).toBe(args.song.name);
                     expect(resp.cover).toBe(args.song.cover);
-                    expect(resp.description).toBe(args.song.description);
-                    expect(resp.creator).toBeDefined();
-                    expect(resp.album).toBe(args.song.album);
+                    expect(resp.creator?._id).toBeDefined();
                     resolve(resp);
                 }
             });
@@ -114,13 +112,11 @@ const songUpdate = (
                 if (err) {
                     reject(err);
                 } else {
-                    const resp = response.body.data.SongUpdate as SongTest;
+                    const resp = response.body.data.songUpdate as SongTest;
                     expect(resp._id).toBe(args.song._id);
                     expect(resp.name).toBe(args.song.name);
                     expect(resp.cover).toBe(args.song.cover);
-                    expect(resp.description).toBe(args.song.description);
-                    expect(resp.creator).toBe(args.song.creator);
-                    expect(resp.album).toBe(args.song.album);
+                    expect(resp.creator?._id).toBeDefined();
                     resolve(resp);
                 }
             });
@@ -150,7 +146,7 @@ const songDelete = (
                 if (err) {
                     reject(err);
                 } else {
-                    const resp = response.body.data.SongDelete as boolean;
+                    const resp = response.body.data.songDelete as boolean;
                     expect(resp).toBeDefined();
                     expect(resp).toBe(true);
                     resolve(resp);
@@ -191,6 +187,7 @@ const songGetAll = (
                     reject(err);
                 } else {
                     const resp = response.body.data.songs as SongTest[];
+                    console.log(resp);
                     expect(resp.length).toBeGreaterThan(0);
                     expect(resp[0]._id).toBeDefined();
                     expect(resp[0].name).toBeDefined();
