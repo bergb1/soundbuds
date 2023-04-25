@@ -8,10 +8,9 @@ import jwt from 'jsonwebtoken';
 import { salt } from '../..';
 import { Song } from '../../interfaces/Song';
 import { Album } from '../../interfaces/Album';
-import { Follower } from '../../interfaces/Follower';
-import followerModel from '../models/followerModel';
-import songModel from '../models/songModel';
-import albumModel from '../models/albumModel';
+import { followerUserDelete } from './followerResolver';
+import { songUserDelete } from './songResolver';
+import { albumUserDelete } from './albumResolver';
 
 // Function to check if user one may modify user two
 const mayModify = async (user_role: string, target_id: string, role?: string) => {
@@ -36,6 +35,13 @@ const mayModify = async (user_role: string, target_id: string, role?: string) =>
     } else {
         return true;
     }
+}
+
+const deleteDependencies = async (user_id: string) => {
+    // Remove dependencies
+    await followerUserDelete(user_id);
+    await songUserDelete(user_id);
+    await albumUserDelete(user_id);
 }
 
 export default {
@@ -234,9 +240,8 @@ export default {
                 throw new GraphQLError('user not deleted');
             }
 
-            // Remove follower relations
-            await followerModel.deleteMany( { user: user._id } );
-            await followerModel.deleteMany( { target: user._id } );
+            // Remove dependencies
+            await deleteDependencies(user._id);
 
             // Manage the response
             const message: LoginMessageResponse = {
@@ -267,9 +272,8 @@ export default {
                 throw new GraphQLError('user not deleted');
             }
 
-            // Remove follower relations
-            await followerModel.deleteMany( { user: args._id } );
-            await followerModel.deleteMany( { target: args._id } );
+            // Remove dependencies
+            await deleteDependencies(args._id);
 
             // Manage the response
             const message: LoginMessageResponse = {

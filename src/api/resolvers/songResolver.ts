@@ -4,6 +4,7 @@ import { User, UserIdWithToken } from "../../interfaces/User";
 import songModel from "../models/songModel";
 import { Types } from 'mongoose';
 import albumModel from '../models/albumModel';
+import userModel from '../models/userModel';
 
 export default {
     User: {
@@ -155,3 +156,20 @@ export default {
         }
     }
 }
+
+const songUserDelete = async (
+    user_id: string
+): Promise<boolean> => {
+    // Remove optional dependencies
+    const songs = await songModel.find({ creator: user_id });
+    for (let i = 0; i < songs.length; i++) {
+        await userModel.updateMany({ favorite_song: songs[i]._id.valueOf() }, { favorite_song: null });
+    }
+
+    // Remove instances
+    await songModel.deleteMany({ creator: user_id });
+
+    return true;
+}
+
+export { songUserDelete }

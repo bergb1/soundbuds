@@ -111,3 +111,15 @@ export default {
         }
     }
 };
+
+const followerUserDelete = async (
+    user_id: string
+): Promise<boolean> => {
+    // Remove instances
+    await followerModel.deleteMany({ user: user_id });
+    await followerModel.deleteMany({ target: user_id });
+
+    return true;
+}
+
+export { followerUserDelete }
