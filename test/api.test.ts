@@ -8,6 +8,9 @@ import userModel from '../src/api/models/userModel';
 import { followMutuals, followUser, followerRelationsRemoved, followers, following, unfollowUser } from './followFunctions';
 import { coverUpload, songCreate, songDelete, songGet, songGetAll, songSearch, songUpdate } from './songFunctions';
 import { Song, SongTest } from '../src/interfaces/Song';
+import { albumCreate, albumDelete, albumGet, albumGetAll, albumSearch, albumUpdate } from './albumFunctions';
+import { AlbumTest } from '../src/interfaces/Album';
+import { Types } from 'mongoose';
 
 describe('Testing graphql api', () => {
     // Test not found
@@ -169,10 +172,38 @@ describe('Testing graphql api', () => {
         });
     });
 
+    let testAlbum: AlbumTest;
+    it(`should create an album`, async () => {
+        testAlbum = await albumCreate(app, testCreatorData.token!, {
+            album: {
+                name: 'Techno',
+                cover: songCover
+            }
+        });
+    });
+
+    let testSong2: SongTest;
+    it(`should create a song in an album`, async () => {
+        testSong2 = await songCreate(app, testCreatorData.token!, {
+            song: {
+                name: 'Techno Hit #1',
+                album: new Types.ObjectId(testAlbum._id)
+            }
+        });
+    });
+
     // Upload album cover test
     it('should upload a cover image for an album', async () => {
-        await coverUpload(app, testCreatorData.token!, {
+        songCover = (await coverUpload(app, testCreatorData.token!, {
             path: 'cover2.jpg'
+        })).data.filename;
+    });
+
+    it(`should modify the cover of the album and it's songs`, async () => {
+        testAlbum.cover = songCover;
+        testAlbum = await albumUpdate(app, testCreatorData.token!, {
+            _id: testAlbum._id!,
+            album: testAlbum
         });
     });
 
@@ -230,6 +261,28 @@ describe('Testing graphql api', () => {
         });
     });
 
+    it(`should return all albums`, async () => {
+        await albumGetAll(app);
+    });
+
+    it(`should return one album`, async () => {
+        await albumGet(app, {
+            _id: testAlbum._id!
+        });
+    });
+
+    it(`should search all albums with an 'e' in the name`, async () => {
+        await albumSearch(app, {
+            name: 'e'
+        });
+    });
+
+    it(`should delete the album`, async () => {
+        await albumDelete(app, testCreatorData.token!, {
+            _id: testAlbum._id!
+        });
+    });
+
     // Should delete a song
     it(`should delete a song`, async () => {
         await songDelete(app, testCreatorData.token!, {
@@ -253,7 +306,7 @@ describe('Testing graphql api', () => {
     });
 
     // Dependencies test
-    it(`should find no followers for the creator's ID`, async () => {
+    it(`should find zero instances with deleted dependencies`, async () => {
         await followerRelationsRemoved(app, testCreatorData.token!);
-    })
+    });
 });
