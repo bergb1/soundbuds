@@ -214,7 +214,7 @@ const songGet = (
             .send({
                 query:
                     `query Query($id: ID!) {
-                        songGet(_id: $id) {
+                        song(_id: $id) {
                             _id
                             name
                             cover
@@ -238,7 +238,7 @@ const songGet = (
                 if (err) {
                     reject(err);
                 } else {
-                    const resp = response.body.data.songGet as SongTest;
+                    const resp = response.body.data.song as SongTest;
                     expect(resp._id).toBeDefined();
                     expect(resp.name).toBeDefined();
                     expect(resp.cover).toBeDefined();

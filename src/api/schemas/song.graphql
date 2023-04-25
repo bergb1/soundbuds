@@ -23,7 +23,7 @@ input SongUpdate {
 
 type Query {
     songs: [Song]
-    songGet(_id: ID!): Song
+    song(_id: ID!): Song
     songSearch(name: String!): [Song]
 }
 

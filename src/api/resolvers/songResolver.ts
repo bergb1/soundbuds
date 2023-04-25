@@ -17,7 +17,7 @@ export default {
                 .find()
                 .select('-__v');
         },
-        songGet: async (
+        song: async (
             _parent: undefined,
             args: {
                 _id: string
