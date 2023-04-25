@@ -150,7 +150,7 @@ export default {
 
             // Validate the response
             if (resp) {
-                manageDependencies(args._id);
+                deleteDependencies(args._id);
                 return true;
             } else {
                 return false;
@@ -159,7 +159,7 @@ export default {
     }
 }
 
-const manageDependencies = async (song_id: string) => {
+const deleteDependencies = async (song_id: string) => {
     // Handle optional dependencies
     await userSongDelete(song_id);
 }
@@ -168,7 +168,7 @@ const songUserDelete = async (user_id: string) => {
     // Manage own dependend instances
     const songs = await songModel.find({ creator: user_id });
     for (let i = 0; i < songs.length; i++) {
-        await manageDependencies(songs[i]._id.valueOf());
+        await deleteDependencies(songs[i]._id.valueOf());
     }
 
     // Delete all songs created by the user

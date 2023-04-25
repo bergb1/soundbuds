@@ -234,7 +234,7 @@ export default {
             }
 
             // Remove dependencies
-            await manageDependencies(user._id);
+            await deleteDependencies(user._id);
 
             // Manage the response
             const message: LoginMessageResponse = {
@@ -266,7 +266,7 @@ export default {
             }
 
             // Remove dependencies
-            await manageDependencies(args._id);
+            await deleteDependencies(args._id);
 
             // Manage the response
             const message: LoginMessageResponse = {
@@ -278,7 +278,7 @@ export default {
     }
 };
 
-const manageDependencies = async (user_id: string) => {
+const deleteDependencies = async (user_id: string) => {
     // Handle strict dependencies
     await followerUserDelete(user_id);
     await songUserDelete(user_id);

@@ -106,9 +106,14 @@ export default {
             // Validate the response
             if (!album) {
                 throw new GraphQLError('song not updated');
-            } else {
-                return album;
             }
+            
+            // If the cover was changed, change song covers aswell
+            if (args.album.cover) {
+                await songModel.updateMany({ album: args._id }, { cover: args.album.cover });
+            }
+            
+            return album;
         },
         albumDelete: async (
             _parent: undefined,
@@ -137,7 +142,7 @@ export default {
 
             // Validate the response
             if (resp) {
-                manageDependencies(args._id);
+                deleteDependencies(args._id);
                 return true;
             } else {
                 return false;
@@ -146,7 +151,7 @@ export default {
     }
 }
 
-const manageDependencies = async (album_id: string) => {
+const deleteDependencies = async (album_id: string) => {
     // Handle optional dependencies
     await userAlbumDelete(album_id);
     await songAlbumDelete(album_id);
@@ -158,7 +163,7 @@ const albumUserDelete = async (
     // Manage own dependend instances
     const albums = await albumModel.find({ creator: user_id });
     for (let i = 0; i < albums.length; i++) {
-        await manageDependencies(albums[i]._id.valueOf());
+        await deleteDependencies(albums[i]._id.valueOf());
     }
 
     // Delete all albums created by the user
