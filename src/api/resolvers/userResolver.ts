@@ -37,13 +37,6 @@ const mayModify = async (user_role: string, target_id: string, role?: string) =>
     }
 }
 
-const deleteDependencies = async (user_id: string) => {
-    // Remove dependencies
-    await followerUserDelete(user_id);
-    await songUserDelete(user_id);
-    await albumUserDelete(user_id);
-}
-
 export default {
     Song: {
         creator: async (parent: Song) => {
@@ -241,7 +234,7 @@ export default {
             }
 
             // Remove dependencies
-            await deleteDependencies(user._id);
+            await manageDependencies(user._id);
 
             // Manage the response
             const message: LoginMessageResponse = {
@@ -273,7 +266,7 @@ export default {
             }
 
             // Remove dependencies
-            await deleteDependencies(args._id);
+            await manageDependencies(args._id);
 
             // Manage the response
             const message: LoginMessageResponse = {
@@ -284,3 +277,20 @@ export default {
         }
     }
 };
+
+const manageDependencies = async (user_id: string) => {
+    // Handle strict dependencies
+    await followerUserDelete(user_id);
+    await songUserDelete(user_id);
+    await albumUserDelete(user_id);
+}
+
+const userSongDelete = async (song_id: string) => {
+    await userModel.updateMany({ favorite_song: song_id }, { favorite_song: null });
+}
+
+const userAlbumDelete = async (album_id: string) => {
+    await userModel.updateMany({ favorite_album: album_id }, { favorite_album: null });
+}
+
+export { userSongDelete, userAlbumDelete }

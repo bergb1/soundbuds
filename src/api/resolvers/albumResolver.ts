@@ -6,6 +6,8 @@ import albumModel from "../models/albumModel";
 import { Types } from 'mongoose';
 import userModel from '../models/userModel';
 import songModel from '../models/songModel';
+import { userAlbumDelete } from './userResolver';
+import { songAlbumDelete } from './songResolver';
 
 export default {
     User: {
@@ -135,6 +137,7 @@ export default {
 
             // Validate the response
             if (resp) {
+                manageDependencies(args._id);
                 return true;
             } else {
                 return false;
@@ -143,17 +146,22 @@ export default {
     }
 }
 
+const manageDependencies = async (album_id: string) => {
+    // Handle optional dependencies
+    await userAlbumDelete(album_id);
+    await songAlbumDelete(album_id);
+}
+
 const albumUserDelete = async (
     user_id: string
 ): Promise<boolean> => {
-    // Remove optional dependencies
+    // Manage own dependend instances
     const albums = await albumModel.find({ creator: user_id });
     for (let i = 0; i < albums.length; i++) {
-        await userModel.updateMany({ favorite_album: albums[i]._id.valueOf() }, { favorite_album: null });
-        await songModel.updateMany({ album: albums[i]._id.valueOf() }, { album: null });
+        await manageDependencies(albums[i]._id.valueOf());
     }
 
-    // Remove instances
+    // Delete all albums created by the user
     await albumModel.deleteMany({ creator: user_id });
 
     return true;
