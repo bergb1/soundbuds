@@ -9,7 +9,7 @@ type Song {
 
 input SongInput {
     name: String!
-    cover: String!
+    cover: String
     description: String
     album: ID
 }

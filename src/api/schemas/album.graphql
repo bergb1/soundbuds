@@ -6,6 +6,26 @@ type Album {
     creator: User!
 }
 
+input AlbumInput {
+    name: String!
+    cover: String!
+    description: String
+}
+
+input AlbumUpdate {
+    name: String
+    cover: String
+    description: String
+}
+
 type Query {
     albums: [Album]
+    ablum(_id: ID!): Album
+    albumSearch(name: String!): [Album]
+}
+
+type Mutation {
+    albumCreate(album: AlbumInput!): Album
+    albumUpdate(_id: ID!, album: AlbumUpdate!): Album
+    albumDelete(_id: ID!): Boolean
 }
