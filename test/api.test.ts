@@ -8,7 +8,7 @@ import userModel from '../src/api/models/userModel';
 import { followMutuals, followUser, followerRelationsRemoved, followers, following, unfollowUser } from './followFunctions';
 import { coverUpload, songCreate, songDelete, songSearch, songUpdate } from './songFunctions';
 import { SongTest } from '../src/interfaces/Song';
-import { albumCreate, albumDelete, albumGet, albumGetAll, albumSearch, albumUpdate } from './albumFunctions';
+import { albumCreate, albumDelete, albumSearch, albumUpdate } from './albumFunctions';
 import { AlbumTest } from '../src/interfaces/Album';
 import { Types } from 'mongoose';
 import { postCreate, postDelete, postGetFollowing, postGetForUser } from './postFunctions';
@@ -209,18 +209,6 @@ describe('Testing graphql api', () => {
         testAlbum = await albumUpdate(app, testCreatorData.token!, {
             _id: testAlbum._id!,
             album: testAlbum
-        });
-    });
-
-    // Get all albums
-    it(`should return all albums`, async () => {
-        await albumGetAll(app);
-    });
-
-    // Get a single album
-    it(`should return one album`, async () => {
-        await albumGet(app, {
-            _id: testAlbum._id!
         });
     });
 

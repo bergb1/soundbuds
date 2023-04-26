@@ -20,21 +20,6 @@ export default {
         }
     },
     Query: {
-        albums: async () => {
-            return await albumModel
-                .find()
-                .select('-__v');
-        },
-        album: async (
-            _parent: undefined,
-            args: {
-                _id: string
-            }
-        ) => {
-            return await albumModel
-                .findById(args._id)
-                .select('-__v');
-        },
         albumSearch: async (
             _parent: undefined,
             args: {
