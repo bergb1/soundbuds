@@ -76,9 +76,9 @@ export default {
             // Validate the response
             if (!song) {
                 throw new GraphQLError('song not created');
-            } else {
-                return song;
             }
+
+            return song;
         },
         songUpdate: async (
             _parent: undefined,
@@ -103,7 +103,12 @@ export default {
                 throw new GraphQLError('request not authorized');
             }
 
-            // Make the album cover the song cover if it was provided
+            // Remove the cover if the song is in an album
+            if (target_song.album && !args.song.album && args.song.cover) {
+                args.song.cover = target_song.cover;
+            }
+
+            // Pass album properties
             if (args.song.album) {
                 const album = await albumModel.findById(args.song.album);
                 if (!album) {
@@ -119,9 +124,9 @@ export default {
             // Validate the response
             if (!song) {
                 throw new GraphQLError('song not updated');
-            } else {
-                return song;
             }
+
+            return song
         },
         songDelete: async (
             _parent: undefined,
@@ -149,12 +154,12 @@ export default {
             const resp = await songModel.findByIdAndDelete(args._id);
 
             // Validate the response
-            if (resp) {
-                deleteDependencies(args._id);
-                return true;
-            } else {
-                return false;
+            if (!resp) {
+                throw new GraphQLError('song not deleted');
             }
+
+            deleteDependencies(args._id);
+            return true;
         }
     }
 }
