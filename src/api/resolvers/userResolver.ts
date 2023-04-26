@@ -49,11 +49,6 @@ export default {
         }
     },
     Query: {
-        users: async () => {
-            return await userModel
-                .find()
-                .select('-__v -password -role');
-        },
         user: async (
             _parent: unknown,
             args: {_id: string}

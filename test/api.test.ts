@@ -2,7 +2,7 @@ import app from '../src/app';
 import randomstring from 'randomstring';
 import { getNotFound } from './testFunctions';
 import { UserTest } from '../src/interfaces/User';
-import { getSingleUser, getUserByName, getUsers, userDelete, userDeleteByID, userElevate, userLogin, userRegister, userUpdate, userUpdateByID } from './userFunctions';
+import { getSingleUser, getUserByName, userDelete, userDeleteByID, userElevate, userLogin, userRegister, userUpdate, userUpdateByID } from './userFunctions';
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 import userModel from '../src/api/models/userModel';
 import { followMutuals, followUser, followerRelationsRemoved, followers, following, unfollowUser } from './followFunctions';
@@ -50,11 +50,6 @@ describe('Testing graphql api', () => {
         if(actualUser?.role == 'admin') {
             throw new Error('User was created with admin role');
         }
-    });
-
-    // Get All test
-    it(`should retrieve an array of all the users in the database`, async () => {
-        await getUsers(app);
     });
 
     // Admin user for testing with illegal self-assigned role
