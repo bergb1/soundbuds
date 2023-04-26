@@ -1,0 +1,30 @@
+scalar DateTime
+
+type Post {
+    _id: ID!
+    message: String!
+    date: DateTime!
+    creator: User!
+    song: Song!
+}
+
+input PostInput {
+    message: String!
+    song: ID!
+}
+
+input PostUpdate {
+    message: String
+    song: ID
+}
+
+type Query {
+    posts: [Post]
+    post: Post
+}
+
+type Mutation {
+    postCreate(post: PostInput!): Post
+    postUpdate(_id: ID!, post: PostUpdate!): Post
+    postDelete(_id: ID!): Boolean
+}
