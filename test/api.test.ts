@@ -25,7 +25,10 @@ describe('Testing graphql api', () => {
         password: 'testpassword'
     };
 
-    let testUserData: LoginMessageResponse;
+    // User register
+    it('should register a user', async () => {
+        testUser._id = (await userRegister(app, testUser)).user._id;
+    });
 
     // Creator for testing
     let testCreator: UserTest = {
@@ -33,26 +36,6 @@ describe('Testing graphql api', () => {
         email: randomstring.generate(9) + '@creator.fi',
         password: 'testpassword'
     };
-
-    let testCreatorData: LoginMessageResponse;
-
-    // Admin user for testing with illegal self-assigned role
-    let testAdmin: UserTest = {
-        username: 'Test Admin ' + randomstring.generate(7),
-        email: randomstring.generate(9) + '@admin.fi',
-        password: 'testpassword',
-        role: 'admin'
-    };
-
-    let testAdminData: LoginMessageResponse;
-
-    // Root user
-    let rootUserData: LoginMessageResponse;
-
-    // User register
-    it('should register a user', async () => {
-        testUser._id = (await userRegister(app, testUser)).user._id;
-    });
 
     // Creator register
     it('should register a user', async () => {
@@ -73,6 +56,14 @@ describe('Testing graphql api', () => {
         await getUsers(app);
     });
 
+    // Admin user for testing with illegal self-assigned role
+    let testAdmin: UserTest = {
+        username: 'Test Admin ' + randomstring.generate(7),
+        email: randomstring.generate(9) + '@admin.fi',
+        password: 'testpassword',
+        role: 'admin'
+    };
+
     // Get Single test
     it(`should get the admin user`, async () => {
         await getSingleUser(app, testAdmin._id!);
@@ -84,6 +75,7 @@ describe('Testing graphql api', () => {
     });
 
     // Root login
+    let rootUserData: LoginMessageResponse;
     it(`should login the root`, async () => {
         rootUserData = await userLogin(app, {
             username: 'root',
@@ -93,6 +85,7 @@ describe('Testing graphql api', () => {
     });
 
     // User login
+    let testUserData: LoginMessageResponse;
     it('should login a user', async () => {
         testUserData = await userLogin(app, testUser);
     });
@@ -107,6 +100,7 @@ describe('Testing graphql api', () => {
     });
 
     // Admin login
+    let testAdminData: LoginMessageResponse;
     it('should login a user', async () => {
         testAdminData = await userLogin(app, testAdmin);
     });
@@ -131,6 +125,7 @@ describe('Testing graphql api', () => {
     });
 
     // Creator login
+    let testCreatorData: LoginMessageResponse;
     it('should login a creator', async () => {
         testCreatorData = await userLogin(app, testCreator);
     });
@@ -172,6 +167,7 @@ describe('Testing graphql api', () => {
         });
     });
 
+    // Create album
     let testAlbum: AlbumTest;
     it(`should create an album`, async () => {
         testAlbum = await albumCreate(app, testCreatorData.token!, {
@@ -182,6 +178,7 @@ describe('Testing graphql api', () => {
         });
     });
 
+    // Create song
     let testSong2: SongTest;
     it(`should create a song in an album`, async () => {
         testSong2 = await songCreate(app, testCreatorData.token!, {
@@ -199,6 +196,7 @@ describe('Testing graphql api', () => {
         })).data.filename;
     });
 
+    // Update album
     it(`should modify the cover of the album and it's songs`, async () => {
         testAlbum.cover = songCover;
         testAlbum = await albumUpdate(app, testCreatorData.token!, {
@@ -261,22 +259,26 @@ describe('Testing graphql api', () => {
         });
     });
 
+    // Get all albums
     it(`should return all albums`, async () => {
         await albumGetAll(app);
     });
 
+    // Get a single album
     it(`should return one album`, async () => {
         await albumGet(app, {
             _id: testAlbum._id!
         });
     });
 
+    // Search for albums
     it(`should search all albums with an 'e' in the name`, async () => {
         await albumSearch(app, {
             name: 'e'
         });
     });
 
+    // Delete albums
     it(`should delete the album`, async () => {
         await albumDelete(app, testCreatorData.token!, {
             _id: testAlbum._id!
