@@ -4,7 +4,6 @@ import { Song } from "../../interfaces/Song";
 import { User, UserIdWithToken } from "../../interfaces/User";
 import albumModel from "../models/albumModel";
 import { Types } from 'mongoose';
-import userModel from '../models/userModel';
 import songModel from '../models/songModel';
 import { userAlbumDelete } from './userResolver';
 import { songAlbumDelete } from './songResolver';
@@ -72,10 +71,10 @@ export default {
 
             // Validate the response
             if (!album) {
-                throw new GraphQLError('song not created');
-            } else {
-                return album;
-            }
+                throw new GraphQLError('album not created');
+            } 
+
+            return album;
         },
         albumUpdate: async (
             _parent: undefined,
@@ -92,7 +91,7 @@ export default {
             // Find the instance            
             const target_album = await albumModel.findById(args._id);
             if (!target_album) {
-                throw new GraphQLError('song not found');
+                throw new GraphQLError('album not found');
             }
 
             // Check privileges
@@ -105,12 +104,12 @@ export default {
 
             // Validate the response
             if (!album) {
-                throw new GraphQLError('song not updated');
+                throw new GraphQLError('album not updated');
             }
             
             // If the cover was changed, change song covers aswell
             if (args.album.cover) {
-                await songModel.updateMany({ album: args._id }, { cover: args.album.cover });
+                await songModel.updateMany({ album: album._id }, { cover: album.cover });
             }
             
             return album;
@@ -129,7 +128,7 @@ export default {
             // Find the instance            
             const target_album = await albumModel.findById(args._id);
             if (!target_album) {
-                throw new GraphQLError('song not found');
+                throw new GraphQLError('album not found');
             }
 
             // Check privileges
@@ -141,12 +140,12 @@ export default {
             const resp = await albumModel.findByIdAndDelete(args._id);
 
             // Validate the response
-            if (resp) {
-                deleteDependencies(args._id);
-                return true;
-            } else {
-                return false;
+            if (!resp) {
+                throw new GraphQLError('album not deleted');
             }
+
+            deleteDependencies(args._id);
+            return true;
         }
     }
 }
