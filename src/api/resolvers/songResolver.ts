@@ -4,7 +4,6 @@ import { User, UserIdWithToken } from "../../interfaces/User";
 import songModel from "../models/songModel";
 import { Types } from 'mongoose';
 import albumModel from '../models/albumModel';
-import userModel from '../models/userModel';
 import { userSongDelete } from './userResolver';
 
 export default {
