@@ -41,7 +41,7 @@ const postCreate = (
                     expect(resp.message).toBe(args.post.message);
                     expect(resp.date).toBeDefined();
                     expect(resp.creator?._id).toBeDefined();
-                    expect(resp.song?._id).toBe(args.post.song);
+                    expect(resp.song?._id).toBe(args.post.song?.valueOf());
                     resolve(resp);
                 }
             });
@@ -89,7 +89,7 @@ const postUpdate = (
                     if (args.post.message) expect(resp.message).toBe(args.post.message);
                     expect(resp.date).toBeDefined();
                     expect(resp.creator?._id).toBeDefined();
-                    if (args.post.song) expect(resp.song?._id).toBe(args.post.song);
+                    if (args.post.song) expect(resp.song?._id).toBe(args.post.song.valueOf());
                     resolve(resp);
                 }
             });

@@ -179,9 +179,8 @@ describe('Testing graphql api', () => {
     });
 
     // Create song
-    let testSong2: SongTest;
     it(`should create a song in an album`, async () => {
-        testSong2 = await songCreate(app, testCreatorData.token!, {
+        await songCreate(app, testCreatorData.token!, {
             song: {
                 name: 'Techno Hit #1',
                 album: new Types.ObjectId(testAlbum._id)

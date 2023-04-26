@@ -1,6 +1,6 @@
 import request from 'supertest';
 import UploadMessageResponse from '../src/interfaces/UploadMessageResponse';
-import { Song, SongTest } from '../src/interfaces/Song';
+import { SongTest } from '../src/interfaces/Song';
 
 // Upload cover test
 const coverUpload = (
@@ -67,9 +67,13 @@ const songCreate = (
                     const resp = response.body.data.songCreate as SongTest;
                     expect(resp._id).toBeDefined();
                     expect(resp.name).toBe(args.song.name);
-                    if (args.song.cover) expect(resp.cover).toBe(args.song.cover);
                     expect(resp.creator?._id).toBeDefined();
-                    if (args.song.album) expect(resp.album?._id);
+                    if (args.song.cover && !args.song.album) {
+                        expect(resp.cover).toBe(args.song.cover);
+                    } else if (args.song.album) {
+                        expect(resp.cover).toBeDefined();
+                        expect(resp.album?._id).toBe(args.song.album.valueOf());
+                    }
                     resolve(resp);
                 }
             });
