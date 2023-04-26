@@ -11,7 +11,7 @@ import { SongTest } from '../src/interfaces/Song';
 import { albumCreate, albumDelete, albumGet, albumGetAll, albumSearch, albumUpdate } from './albumFunctions';
 import { AlbumTest } from '../src/interfaces/Album';
 import { Types } from 'mongoose';
-import { postCreate, postDelete, postGetFollowing, postGetForUser, postUpdate } from './postFunctions';
+import { postCreate, postDelete, postGetFollowing, postGetForUser } from './postFunctions';
 
 describe('Testing graphql api', () => {
     // Test not found
@@ -294,16 +294,6 @@ describe('Testing graphql api', () => {
                 song: new Types.ObjectId(testSong1._id)
             }
         }))._id!;
-    });
-
-    // Update Post
-    it(`should update a post as an admin`, async () => {
-        await postUpdate(app, testAdminData.token!, {
-            _id: testPostID,
-            post: {
-                message: 'Goodbye world!'
-            }
-        });
     });
 
     it(`should return all posts made by a user`, async () => {

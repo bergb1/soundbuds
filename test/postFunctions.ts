@@ -48,54 +48,6 @@ const postCreate = (
     });
 }
 
-// Update post test
-const postUpdate = (
-    url: string | Function,
-    token: string,
-    args: { _id: string, post: PostTest }
-): Promise<PostTest> => {
-    return new Promise((resolve, reject) => {
-        request(url)
-            .post('/graphql')
-            .set('Authorization', 'Bearer ' + token)
-            .send({
-                query: 
-                    `mutation Mutation($id: ID!, $post: PostUpdate!) {
-                        postUpdate(_id: $id, post: $post) {
-                            _id
-                            message
-                            date
-                            creator {
-                                _id
-                                username
-                            }
-                            song {
-                                _id
-                                name
-                            }
-                        }
-                    }`,
-                variables: {
-                    id: args._id,
-                    post: args.post
-                }
-            })
-            .expect(200, (err, response) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    const resp = response.body.data.postUpdate as PostTest;
-                    expect(resp._id).toBe(args._id);
-                    if (args.post.message) expect(resp.message).toBe(args.post.message);
-                    expect(resp.date).toBeDefined();
-                    expect(resp.creator?._id).toBeDefined();
-                    if (args.post.song) expect(resp.song?._id).toBe(args.post.song.valueOf());
-                    resolve(resp);
-                }
-            });
-    });
-}
-
 // Delete post test
 const postDelete = (
     url: string | Function,
@@ -217,4 +169,4 @@ const postGetFollowing = (
     });
 }
 
-export { postCreate, postUpdate, postDelete, postGetForUser, postGetFollowing }
+export { postCreate, postDelete, postGetForUser, postGetFollowing }

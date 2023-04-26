@@ -25,6 +25,5 @@ type Query {
 
 type Mutation {
     postCreate(post: PostInput!): Post
-    postUpdate(_id: ID!, post: PostUpdate!): Post
     postDelete(_id: ID!): Boolean
 }
