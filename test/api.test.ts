@@ -258,7 +258,7 @@ describe('Testing graphql api', () => {
 
     // Create Post
     let testPostID: string;
-    it(`should create a post as the admin`, async () => {
+    it(`should create a post`, async () => {
         testPostID = (await postCreate(app, testAdminData.token!, {
             post: {
                 message: 'Hello world!',
@@ -267,19 +267,20 @@ describe('Testing graphql api', () => {
         }))._id!;
     });
 
+    // Get all user posts
     it(`should return all posts made by a user`, async () => {
         await postGetForUser(app, {
             _id: testAdmin._id!
         });
     });
 
-    // Should get all posts for following
+    // Get all following posts
     it(`should return all posts from people you are following`, async () => {
         await postGetFollowing(app, testCreatorData.token!);
     });
 
     // Delete post
-    it(`should delete a post from the database`, async () => {
+    it(`should delete a post`, async () => {
         await postDelete(app, testAdminData.token!, {
             _id: testPostID
         });
