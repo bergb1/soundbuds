@@ -20,7 +20,7 @@ input PostUpdate {
 
 type Query {
     posts: [Post]
-    post: Post
+    post(_id: ID!): Post
 }
 
 type Mutation {
