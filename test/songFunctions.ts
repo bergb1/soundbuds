@@ -165,95 +165,6 @@ const songDelete = (
     });
 }
 
-// Get all songs test
-const songGetAll = (
-    url: string | Function,
-): Promise<SongTest[]> => {
-    return new Promise((resolve, reject) => {
-        request(url)
-            .post('/graphql')
-            .send({
-                query:
-                    `query Query {
-                        songs {
-                            _id
-                            name
-                            cover
-                            description
-                            creator {
-                                _id
-                                username
-                                nickname
-                            }
-                            album {
-                                _id
-                                name
-                            }
-                        }
-                    }`
-            })
-            .expect(200, (err, response) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    const resp = response.body.data.songs as SongTest[];
-                    expect(resp.length).toBeGreaterThan(0);
-                    expect(resp[0]._id).toBeDefined();
-                    expect(resp[0].name).toBeDefined();
-                    expect(resp[0].cover).toBeDefined();
-                    expect(resp[0].creator?._id).toBeDefined();
-                    resolve(resp);
-                }
-            });
-    });
-}
-
-// Get song test
-const songGet = (
-    url: string | Function,
-    args: { _id: string }
-): Promise<SongTest> => {
-    return new Promise((resolve, reject) => {
-        request(url)
-            .post('/graphql')
-            .send({
-                query:
-                    `query Query($id: ID!) {
-                        song(_id: $id) {
-                            _id
-                            name
-                            cover
-                            description
-                            creator {
-                                _id
-                                username
-                                nickname
-                            }
-                            album {
-                                _id
-                                name
-                            }
-                        }
-                    }`,
-                variables: {
-                    id: args._id
-                }
-            })
-            .expect(200, (err, response) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    const resp = response.body.data.song as SongTest;
-                    expect(resp._id).toBeDefined();
-                    expect(resp.name).toBeDefined();
-                    expect(resp.cover).toBeDefined();
-                    expect(resp.creator?._id).toBeDefined();
-                    resolve(resp);
-                }
-            });
-    });
-}
-
 // Search for songs test
 const songSearch = (
     url: string | Function,
@@ -301,4 +212,4 @@ const songSearch = (
     });
 }
 
-export { coverUpload, songCreate, songUpdate, songDelete, songGetAll, songGet, songSearch }
+export { coverUpload, songCreate, songUpdate, songDelete, songSearch }

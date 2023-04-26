@@ -6,7 +6,7 @@ import { getSingleUser, getUserByName, getUsers, userDelete, userDeleteByID, use
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 import userModel from '../src/api/models/userModel';
 import { followMutuals, followUser, followerRelationsRemoved, followers, following, unfollowUser } from './followFunctions';
-import { coverUpload, songCreate, songDelete, songGet, songGetAll, songSearch, songUpdate } from './songFunctions';
+import { coverUpload, songCreate, songDelete, songSearch, songUpdate } from './songFunctions';
 import { SongTest } from '../src/interfaces/Song';
 import { albumCreate, albumDelete, albumGet, albumGetAll, albumSearch, albumUpdate } from './albumFunctions';
 import { AlbumTest } from '../src/interfaces/Album';
@@ -165,18 +165,6 @@ describe('Testing graphql api', () => {
         testSong1 = await songUpdate(app, testAdminData.token!, {
             _id: testSong1._id!,
             song: testSong1
-        });
-    });
-
-    // Get all songs
-    it(`should get all songs`, async () => {
-        await songGetAll(app);
-    });
-
-    // Should get one song
-    it(`should get one song`, async () => {
-        await songGet(app, {
-            _id: testSong1._id!
         });
     });
 

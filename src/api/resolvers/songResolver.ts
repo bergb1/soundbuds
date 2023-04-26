@@ -13,21 +13,6 @@ export default {
         }
     },
     Query: {
-        songs: async () => {
-            return await songModel
-                .find()
-                .select('-__v');
-        },
-        song: async (
-            _parent: undefined,
-            args: {
-                _id: string
-            }
-        ) => {
-            return await songModel
-                .findById(args._id)
-                .select('-__v');
-        },
         songSearch: async (
             _parent: undefined,
             args: {
