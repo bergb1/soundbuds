@@ -19,8 +19,8 @@ input PostUpdate {
 }
 
 type Query {
-    posts: [Post]
-    post(_id: ID!): Post
+    postsUser(_id: ID!): [Post]
+    postsFollowing: [Post]
 }
 
 type Mutation {

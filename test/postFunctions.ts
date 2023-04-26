@@ -127,64 +127,18 @@ const postDelete = (
     });
 }
 
-// Get all posts test
-const postGetAll = (
+// Get all posts from a user
+const postGetForUser = (
     url: string | Function,
-    token: string
+    args: { _id: string }
 ): Promise<PostTest[]> => {
     return new Promise((resolve, reject) => {
         request(url)
             .post('/graphql')
-            .set('Authorization', 'Bearer ' + token)
-            .send({
-                query: 
-                    `query Query {
-                        posts {
-                            _id
-                            message
-                            date
-                            creator {
-                                _id
-                                username
-                            }
-                            song {
-                                _id
-                                name
-                            }
-                        }
-                    }`
-            })
-            .expect(200, (err, response) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    const resp = response.body.data.posts as PostTest[];
-                    expect(resp.length).toBeGreaterThan(0);
-                    expect(resp[0]._id).toBeDefined();
-                    expect(resp[0].message).toBeDefined();
-                    expect(resp[0].date).toBeDefined();
-                    expect(resp[0].creator?._id).toBeDefined();
-                    expect(resp[0].song?._id).toBeDefined();
-                    resolve(resp);
-                }
-            });
-    });
-}
-
-// Get single post test
-const postGet = (
-    url: string | Function,
-    token: string,
-    args: { _id: string }
-): Promise<PostTest> => {
-    return new Promise((resolve, reject) => {
-        request(url)
-            .post('/graphql')
-            .set('Authorization', 'Bearer ' + token)
             .send({
                 query: 
                     `query Query($id: ID!) {
-                        post(_id: $id) {
+                        postsUser(_id: $id) {
                             _id
                             message
                             date
@@ -206,16 +160,61 @@ const postGet = (
                 if (err) {
                     reject(err);
                 } else {
-                    const resp = response.body.data.post as PostTest;
-                    expect(resp._id).toBe(args._id);
-                    expect(resp.message).toBeDefined();
-                    expect(resp.date).toBeDefined();
-                    expect(resp.creator?._id).toBeDefined();
-                    expect(resp.song?._id).toBeDefined();
+                    const resp = response.body.data.postsUser as PostTest[];
+                    expect(resp.length).toBeGreaterThan(0);
+                    expect(resp[0]._id).toBeDefined();
+                    expect(resp[0].message).toBeDefined();
+                    expect(resp[0].date).toBeDefined();
+                    expect(resp[0].creator?._id).toBeDefined();
+                    expect(resp[0].song?._id).toBeDefined();
                     resolve(resp);
                 }
             });
     });
 }
 
-export { postCreate, postUpdate, postDelete, postGetAll, postGet }
+// Get all posts test
+const postGetFollowing = (
+    url: string | Function,
+    token: string
+): Promise<PostTest[]> => {
+    return new Promise((resolve, reject) => {
+        request(url)
+            .post('/graphql')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+                query: 
+                    `query Query {
+                        postsFollowing {
+                            _id
+                            message
+                            date
+                            creator {
+                                _id
+                                username
+                            }
+                            song {
+                                _id
+                                name
+                            }
+                        }
+                    }`
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.postsFollowing as PostTest[];
+                    expect(resp.length).toBeGreaterThan(0);
+                    expect(resp[0]._id).toBeDefined();
+                    expect(resp[0].message).toBeDefined();
+                    expect(resp[0].date).toBeDefined();
+                    expect(resp[0].creator?._id).toBeDefined();
+                    expect(resp[0].song?._id).toBeDefined();
+                    resolve(resp);
+                }
+            });
+    });
+}
+
+export { postCreate, postUpdate, postDelete, postGetForUser, postGetFollowing }

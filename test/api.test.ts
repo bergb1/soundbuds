@@ -7,10 +7,11 @@ import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 import userModel from '../src/api/models/userModel';
 import { followMutuals, followUser, followerRelationsRemoved, followers, following, unfollowUser } from './followFunctions';
 import { coverUpload, songCreate, songDelete, songGet, songGetAll, songSearch, songUpdate } from './songFunctions';
-import { Song, SongTest } from '../src/interfaces/Song';
+import { SongTest } from '../src/interfaces/Song';
 import { albumCreate, albumDelete, albumGet, albumGetAll, albumSearch, albumUpdate } from './albumFunctions';
 import { AlbumTest } from '../src/interfaces/Album';
 import { Types } from 'mongoose';
+import { postCreate, postDelete, postGetFollowing, postGetForUser, postUpdate } from './postFunctions';
 
 describe('Testing graphql api', () => {
     // Test not found
@@ -167,6 +168,25 @@ describe('Testing graphql api', () => {
         });
     });
 
+    // Get all songs
+    it(`should get all songs`, async () => {
+        await songGetAll(app);
+    });
+
+    // Should get one song
+    it(`should get one song`, async () => {
+        await songGet(app, {
+            _id: testSong1._id!
+        });
+    });
+
+    // Search for song test
+    it(`should find all songs with an 'e' in it`, async () => {
+        await songSearch(app, {
+            name: 'e'
+        });
+    });
+
     // Create album
     let testAlbum: AlbumTest;
     it(`should create an album`, async () => {
@@ -196,11 +216,37 @@ describe('Testing graphql api', () => {
     });
 
     // Update album
-    it(`should modify the cover of the album and it's songs`, async () => {
+    it(`should modify the cover of the album`, async () => {
         testAlbum.cover = songCover;
         testAlbum = await albumUpdate(app, testCreatorData.token!, {
             _id: testAlbum._id!,
             album: testAlbum
+        });
+    });
+
+    // Get all albums
+    it(`should return all albums`, async () => {
+        await albumGetAll(app);
+    });
+
+    // Get a single album
+    it(`should return one album`, async () => {
+        await albumGet(app, {
+            _id: testAlbum._id!
+        });
+    });
+
+    // Search for albums
+    it(`should search all albums with an 'e' in the name`, async () => {
+        await albumSearch(app, {
+            name: 'e'
+        });
+    });
+
+    // Delete albums
+    it(`should delete the album`, async () => {
+        await albumDelete(app, testCreatorData.token!, {
+            _id: testAlbum._id!
         });
     });
 
@@ -239,48 +285,42 @@ describe('Testing graphql api', () => {
         await unfollowUser(app, testCreator._id!, testUserData.token!);
     });
 
-    // Get all songs
-    it(`should get all songs`, async () => {
-        await songGetAll(app);
+    // Create Post
+    let testPostID: string;
+    it(`should create a post as the admin`, async () => {
+        testPostID = (await postCreate(app, testAdminData.token!, {
+            post: {
+                message: 'Hello world!',
+                song: new Types.ObjectId(testSong1._id)
+            }
+        }))._id!;
     });
 
-    // Should get one song
-    it(`should get one song`, async () => {
-        await songGet(app, {
-            _id: testSong1._id!
+    // Update Post
+    it(`should update a post as an admin`, async () => {
+        await postUpdate(app, testAdminData.token!, {
+            _id: testPostID,
+            post: {
+                message: 'Goodbye world!'
+            }
         });
     });
 
-    // Search for song test
-    it(`should find all songs with an 'e' in it`, async () => {
-        await songSearch(app, {
-            name: 'e'
+    it(`should return all posts made by a user`, async () => {
+        await postGetForUser(app, {
+            _id: testAdmin._id!
         });
     });
 
-    // Get all albums
-    it(`should return all albums`, async () => {
-        await albumGetAll(app);
+    // Should get all posts for following
+    it(`should return all posts from people you are following`, async () => {
+        await postGetFollowing(app, testCreatorData.token!);
     });
 
-    // Get a single album
-    it(`should return one album`, async () => {
-        await albumGet(app, {
-            _id: testAlbum._id!
-        });
-    });
-
-    // Search for albums
-    it(`should search all albums with an 'e' in the name`, async () => {
-        await albumSearch(app, {
-            name: 'e'
-        });
-    });
-
-    // Delete albums
-    it(`should delete the album`, async () => {
-        await albumDelete(app, testCreatorData.token!, {
-            _id: testAlbum._id!
+    // Delete post
+    it(`should delete a post from the database`, async () => {
+        await postDelete(app, testAdminData.token!, {
+            _id: testPostID
         });
     });
 
@@ -307,7 +347,7 @@ describe('Testing graphql api', () => {
     });
 
     // Dependencies test
-    it(`should find zero instances with deleted dependencies`, async () => {
+    it(`should find no follower relationships with deleted dependencies`, async () => {
         await followerRelationsRemoved(app, testCreatorData.token!);
     });
 });
