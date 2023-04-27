@@ -274,7 +274,7 @@ describe('Testing graphql api', () => {
         });
     });
 
-    /* Get all following posts
+    // Get all following posts
     it(`should return all posts from people you are following`, async () => {
         await postGetFollowing(app, testCreatorData.token!);
     });
@@ -285,7 +285,6 @@ describe('Testing graphql api', () => {
             _id: testPostID
         });
     });
-    */
 
     // Should delete a song
     it(`should delete a song`, async () => {
