@@ -2,15 +2,16 @@ import app from '../src/app';
 import randomstring from 'randomstring';
 import { getNotFound } from './testFunctions';
 import { UserTest } from '../src/interfaces/User';
-import { getSingleUser, getUserByName, getUsers, userDelete, userDeleteByID, userElevate, userLogin, userRegister, userUpdate, userUpdateByID } from './userFunctions';
+import { getSingleUser, getUserByName, userDelete, userDeleteByID, userElevate, userLogin, userRegister, userUpdate, userUpdateByID } from './userFunctions';
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 import userModel from '../src/api/models/userModel';
 import { followMutuals, followUser, followerRelationsRemoved, followers, following, unfollowUser } from './followFunctions';
-import { coverUpload, songCreate, songDelete, songGet, songGetAll, songSearch, songUpdate } from './songFunctions';
-import { Song, SongTest } from '../src/interfaces/Song';
-import { albumCreate, albumDelete, albumGet, albumGetAll, albumSearch, albumUpdate } from './albumFunctions';
+import { coverUpload, songCreate, songDelete, songSearch, songUpdate } from './songFunctions';
+import { SongTest } from '../src/interfaces/Song';
+import { albumCreate, albumDelete, albumSearch, albumUpdate } from './albumFunctions';
 import { AlbumTest } from '../src/interfaces/Album';
 import { Types } from 'mongoose';
+import { postCreate, postDelete, postGetFollowing, postGetForUser } from './postFunctions';
 
 describe('Testing graphql api', () => {
     // Test not found
@@ -25,7 +26,10 @@ describe('Testing graphql api', () => {
         password: 'testpassword'
     };
 
-    let testUserData: LoginMessageResponse;
+    // User register
+    it('should register a user', async () => {
+        testUser._id = (await userRegister(app, testUser)).user._id;
+    });
 
     // Creator for testing
     let testCreator: UserTest = {
@@ -33,26 +37,6 @@ describe('Testing graphql api', () => {
         email: randomstring.generate(9) + '@creator.fi',
         password: 'testpassword'
     };
-
-    let testCreatorData: LoginMessageResponse;
-
-    // Admin user for testing with illegal self-assigned role
-    let testAdmin: UserTest = {
-        username: 'Test Admin ' + randomstring.generate(7),
-        email: randomstring.generate(9) + '@admin.fi',
-        password: 'testpassword',
-        role: 'admin'
-    };
-
-    let testAdminData: LoginMessageResponse;
-
-    // Root user
-    let rootUserData: LoginMessageResponse;
-
-    // User register
-    it('should register a user', async () => {
-        testUser._id = (await userRegister(app, testUser)).user._id;
-    });
 
     // Creator register
     it('should register a user', async () => {
@@ -68,10 +52,13 @@ describe('Testing graphql api', () => {
         }
     });
 
-    // Get All test
-    it(`should retrieve an array of all the users in the database`, async () => {
-        await getUsers(app);
-    });
+    // Admin user for testing with illegal self-assigned role
+    let testAdmin: UserTest = {
+        username: 'Test Admin ' + randomstring.generate(7),
+        email: randomstring.generate(9) + '@admin.fi',
+        password: 'testpassword',
+        role: 'admin'
+    };
 
     // Get Single test
     it(`should get the admin user`, async () => {
@@ -84,6 +71,7 @@ describe('Testing graphql api', () => {
     });
 
     // Root login
+    let rootUserData: LoginMessageResponse;
     it(`should login the root`, async () => {
         rootUserData = await userLogin(app, {
             username: 'root',
@@ -93,6 +81,7 @@ describe('Testing graphql api', () => {
     });
 
     // User login
+    let testUserData: LoginMessageResponse;
     it('should login a user', async () => {
         testUserData = await userLogin(app, testUser);
     });
@@ -107,6 +96,7 @@ describe('Testing graphql api', () => {
     });
 
     // Admin login
+    let testAdminData: LoginMessageResponse;
     it('should login a user', async () => {
         testAdminData = await userLogin(app, testAdmin);
     });
@@ -131,6 +121,7 @@ describe('Testing graphql api', () => {
     });
 
     // Creator login
+    let testCreatorData: LoginMessageResponse;
     it('should login a creator', async () => {
         testCreatorData = await userLogin(app, testCreator);
     });
@@ -172,6 +163,14 @@ describe('Testing graphql api', () => {
         });
     });
 
+    // Search for song test
+    it(`should find all songs with an 'e' in it`, async () => {
+        await songSearch(app, {
+            name: 'e'
+        });
+    });
+
+    // Create album
     let testAlbum: AlbumTest;
     it(`should create an album`, async () => {
         testAlbum = await albumCreate(app, testCreatorData.token!, {
@@ -182,9 +181,9 @@ describe('Testing graphql api', () => {
         });
     });
 
-    let testSong2: SongTest;
+    // Create song
     it(`should create a song in an album`, async () => {
-        testSong2 = await songCreate(app, testCreatorData.token!, {
+        await songCreate(app, testCreatorData.token!, {
             song: {
                 name: 'Techno Hit #1',
                 album: new Types.ObjectId(testAlbum._id)
@@ -199,11 +198,26 @@ describe('Testing graphql api', () => {
         })).data.filename;
     });
 
-    it(`should modify the cover of the album and it's songs`, async () => {
+    // Update album
+    it(`should modify the cover of the album`, async () => {
         testAlbum.cover = songCover;
         testAlbum = await albumUpdate(app, testCreatorData.token!, {
             _id: testAlbum._id!,
             album: testAlbum
+        });
+    });
+
+    // Search for albums
+    it(`should search all albums with an 'e' in the name`, async () => {
+        await albumSearch(app, {
+            name: 'e'
+        });
+    });
+
+    // Delete albums
+    it(`should delete the album`, async () => {
+        await albumDelete(app, testCreatorData.token!, {
+            _id: testAlbum._id!
         });
     });
 
@@ -242,44 +256,33 @@ describe('Testing graphql api', () => {
         await unfollowUser(app, testCreator._id!, testUserData.token!);
     });
 
-    // Get all songs
-    it(`should get all songs`, async () => {
-        await songGetAll(app);
+    // Create Post
+    let testPostID: string;
+    it(`should create a post`, async () => {
+        testPostID = (await postCreate(app, testAdminData.token!, {
+            post: {
+                message: 'Hello world!',
+                song: new Types.ObjectId(testSong1._id)
+            }
+        }))._id!;
     });
 
-    // Should get one song
-    it(`should get one song`, async () => {
-        await songGet(app, {
-            _id: testSong1._id!
+    // Get all user posts
+    it(`should return all posts made by a user`, async () => {
+        await postGetForUser(app, {
+            _id: testAdmin._id!
         });
     });
 
-    // Search for song test
-    it(`should find all songs with an 'e' in it`, async () => {
-        await songSearch(app, {
-            name: 'e'
-        });
+    // Get all following posts
+    it(`should return all posts from people you are following`, async () => {
+        await postGetFollowing(app, testCreatorData.token!);
     });
 
-    it(`should return all albums`, async () => {
-        await albumGetAll(app);
-    });
-
-    it(`should return one album`, async () => {
-        await albumGet(app, {
-            _id: testAlbum._id!
-        });
-    });
-
-    it(`should search all albums with an 'e' in the name`, async () => {
-        await albumSearch(app, {
-            name: 'e'
-        });
-    });
-
-    it(`should delete the album`, async () => {
-        await albumDelete(app, testCreatorData.token!, {
-            _id: testAlbum._id!
+    // Delete post
+    it(`should delete a post`, async () => {
+        await postDelete(app, testAdminData.token!, {
+            _id: testPostID
         });
     });
 
@@ -306,7 +309,7 @@ describe('Testing graphql api', () => {
     });
 
     // Dependencies test
-    it(`should find zero instances with deleted dependencies`, async () => {
+    it(`should find no follower relationships with deleted dependencies`, async () => {
         await followerRelationsRemoved(app, testCreatorData.token!);
     });
 });

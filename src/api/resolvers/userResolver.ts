@@ -11,6 +11,8 @@ import { Album } from '../../interfaces/Album';
 import { followerUserDelete } from './followerResolver';
 import { songUserDelete } from './songResolver';
 import { albumUserDelete } from './albumResolver';
+import { postUserDelete } from './postResolver';
+import { Post } from '../../interfaces/Post';
 
 // Function to check if user one may modify user two
 const mayModify = async (user_role: string, target_id: string, role?: string) => {
@@ -48,12 +50,12 @@ export default {
             return await userModel.findById(parent.creator);
         }
     },
+    Post: {
+        creator: async (parent: Post) => {
+            return await userModel.findById(parent.creator);
+        }
+    },
     Query: {
-        users: async () => {
-            return await userModel
-                .find()
-                .select('-__v -password -role');
-        },
         user: async (
             _parent: unknown,
             args: {_id: string}
@@ -278,19 +280,22 @@ export default {
     }
 };
 
+// Behaviour when a user was deleted
 const deleteDependencies = async (user_id: string) => {
-    // Handle strict dependencies
-    await followerUserDelete(user_id);
     await songUserDelete(user_id);
     await albumUserDelete(user_id);
+    await followerUserDelete(user_id);
+    await postUserDelete(user_id);
 }
 
+// Behaviour when a song was deleted
 const userSongDelete = async (song_id: string) => {
-    await userModel.updateMany({ favorite_song: song_id }, { favorite_song: null });
+    await userModel.updateMany({ favorite_song: song_id }, { $unset: { favorite_song: "" } });
 }
 
+// Behaviour when an album was deleted
 const userAlbumDelete = async (album_id: string) => {
-    await userModel.updateMany({ favorite_album: album_id }, { favorite_album: null });
+    await userModel.updateMany({ favorite_album: album_id }, { $unset: { favorite_album: "" } });
 }
 
 export { userSongDelete, userAlbumDelete }

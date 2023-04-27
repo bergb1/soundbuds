@@ -45,7 +45,6 @@ input AdminModify {
 }
 
 type Query {
-    users: [User]
     userSearch(username: String!): [User]
     user(_id: ID!): User
 }

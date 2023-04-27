@@ -112,8 +112,8 @@ export default {
     }
 };
 
+// Behaviour when a user was deleted
 const followerUserDelete = async (user_id: string) => {
-    // Delete all albums created by the user
     await followerModel.deleteMany({ user: user_id });
     await followerModel.deleteMany({ target: user_id });
 }

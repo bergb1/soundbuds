@@ -19,8 +19,6 @@ input AlbumUpdate {
 }
 
 type Query {
-    albums: [Album]
-    album(_id: ID!): Album
     albumSearch(name: String!): [Album]
 }
 

@@ -4,8 +4,10 @@ import { User, UserIdWithToken } from "../../interfaces/User";
 import songModel from "../models/songModel";
 import { Types } from 'mongoose';
 import albumModel from '../models/albumModel';
-import userModel from '../models/userModel';
 import { userSongDelete } from './userResolver';
+import { postSongDelete } from './postResolver';
+import { Post } from '../../interfaces/Post';
+import { AlbumDatabase } from '../../interfaces/Album';
 
 export default {
     User: {
@@ -13,22 +15,12 @@ export default {
             return await songModel.findById(parent.favorite_song);
         }
     },
+    Post: {
+        song: async (parent: Post) => {
+            return await songModel.findById(parent.song);
+        }
+    },
     Query: {
-        songs: async () => {
-            return await songModel
-                .find()
-                .select('-__v');
-        },
-        song: async (
-            _parent: undefined,
-            args: {
-                _id: string
-            }
-        ) => {
-            return await songModel
-                .findById(args._id)
-                .select('-__v');
-        },
         songSearch: async (
             _parent: undefined,
             args: {
@@ -65,6 +57,8 @@ export default {
                 const album = await albumModel.findById(args.song.album);
                 if (!album) {
                     throw new GraphQLError('album not found');
+                } else if (!album.creator.equals(user._id)) {
+                    throw new GraphQLError('request not authorized');
                 } else {
                     args.song.cover = album.cover;
                 }
@@ -76,9 +70,9 @@ export default {
             // Validate the response
             if (!song) {
                 throw new GraphQLError('song not created');
-            } else {
-                return song;
             }
+
+            return song;
         },
         songUpdate: async (
             _parent: undefined,
@@ -99,15 +93,22 @@ export default {
             }
 
             // Check privileges
-            if (['admin', 'root'].indexOf(user.role) === -1 && !target_song.creator._id.equals(user._id)) {
+            if (['admin', 'root'].indexOf(user.role) === -1 && !target_song.creator.equals(user._id)) {
                 throw new GraphQLError('request not authorized');
             }
 
-            // Make the album cover the song cover if it was provided
+            // Remove the cover if the song is in an album
+            if (target_song.album && !args.song.album && args.song.cover) {
+                args.song.cover = target_song.cover;
+            }
+
+            // Pass album properties
             if (args.song.album) {
                 const album = await albumModel.findById(args.song.album);
                 if (!album) {
                     throw new GraphQLError('album not found');
+                } else if (!album.creator.equals(user._id)) {
+                    throw new GraphQLError('request not authorized');
                 } else {
                     args.song.cover = album.cover;
                 }
@@ -119,9 +120,9 @@ export default {
             // Validate the response
             if (!song) {
                 throw new GraphQLError('song not updated');
-            } else {
-                return song;
             }
+
+            return song
         },
         songDelete: async (
             _parent: undefined,
@@ -141,7 +142,7 @@ export default {
             }
 
             // Check privileges
-            if (['admin', 'root'].indexOf(user.role) === -1 && !target_song.creator._id.equals(user._id)) {
+            if (['admin', 'root'].indexOf(user.role) === -1 && !target_song.creator.equals(user._id)) {
                 throw new GraphQLError('request not authorized');
             }
 
@@ -149,34 +150,43 @@ export default {
             const resp = await songModel.findByIdAndDelete(args._id);
 
             // Validate the response
-            if (resp) {
-                deleteDependencies(args._id);
-                return true;
-            } else {
-                return false;
+            if (!resp) {
+                throw new GraphQLError('song not deleted');
             }
+
+            // Delete dependencies for the deleted instance
+            await deleteDependencies(args._id);
+
+            return true;
         }
     }
 }
 
+// Behaviour when a song was deleted
 const deleteDependencies = async (song_id: string) => {
-    // Handle optional dependencies
+    await postSongDelete(song_id);
     await userSongDelete(song_id);
 }
 
+// Behaviour when a user was deleted
 const songUserDelete = async (user_id: string) => {
-    // Manage own dependend instances
+    // Manage own dependencies
     const songs = await songModel.find({ creator: user_id });
     for (let i = 0; i < songs.length; i++) {
         await deleteDependencies(songs[i]._id.valueOf());
     }
 
-    // Delete all songs created by the user
     await songModel.deleteMany({ creator: user_id });
 }
 
-const songAlbumDelete = async (album_id: string) => {
-    songModel.updateMany({ album: album_id }, { album: null });
+// Behaviour when an album was updated
+const songAlbumUpdate = async (album: AlbumDatabase) => {
+    await songModel.updateMany({ album: album._id }, { cover: album.cover });
 }
 
-export { songUserDelete, songAlbumDelete }
+// Behaviour when an album was deleted
+const songAlbumDelete = async (album_id: string) => {
+    await songModel.updateMany({ album: album_id }, { $unset: { album: "" } });
+}
+
+export { songUserDelete, songAlbumUpdate, songAlbumDelete }

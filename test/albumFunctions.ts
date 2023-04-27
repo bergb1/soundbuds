@@ -123,85 +123,6 @@ const albumDelete = (
     });
 }
 
-// Get all albums test
-const albumGetAll = (
-    url: string | Function,
-): Promise<AlbumTest[]> => {
-    return new Promise((resolve, reject) => {
-        request(url)
-            .post('/graphql')
-            .send({
-                query: 
-                    `query Query {
-                        albums {
-                            _id
-                            name
-                            cover
-                            description
-                            creator {
-                                _id
-                                username
-                            }
-                        }
-                    }`
-            })
-            .expect(200, (err, response) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    const resp = response.body.data.albums as AlbumTest[];
-                    expect(resp.length).toBeGreaterThan(0);
-                    expect(resp[0]._id).toBeDefined();
-                    expect(resp[0].name).toBeDefined();
-                    expect(resp[0].cover).toBeDefined();
-                    expect(resp[0].creator?._id).toBeDefined();
-                    resolve(resp);
-                }
-            });
-    });
-}
-
-// Get album test
-const albumGet = (
-    url: string | Function,
-    args: { _id: string }
-): Promise<AlbumTest> => {
-    return new Promise((resolve, reject) => {
-        request(url)
-            .post('/graphql')
-            .send({
-                query: 
-                    `query Query($id: ID!) {
-                        album(_id: $id) {
-                            _id
-                            name
-                            cover
-                            description
-                            creator {
-                                _id
-                                username
-                            }
-                        }
-                    }`,
-                variables: {
-                    id: args._id
-                }
-            })
-            .expect(200, (err, response) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    const resp = response.body.data.album as AlbumTest;
-                    expect(resp._id).toBeDefined();
-                    expect(resp.name).toBeDefined();
-                    expect(resp.cover).toBeDefined();
-                    expect(resp.creator?._id).toBeDefined();
-                    resolve(resp);
-                }
-            });
-    });
-}
-
 // Search for albums test
 const albumSearch = (
     url: string | Function,
@@ -244,4 +165,4 @@ const albumSearch = (
     });
 }
 
-export { albumCreate, albumUpdate, albumDelete, albumGetAll, albumGet, albumSearch }
+export { albumCreate, albumUpdate, albumDelete, albumSearch }
