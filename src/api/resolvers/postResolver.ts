@@ -103,7 +103,7 @@ export default {
             }
 
             // Check privileges
-            if (['admin', 'root'].indexOf(user.role) === -1 && !target_post.creator._id.equals(user._id)) {
+            if (['admin', 'root'].indexOf(user.role) === -1 && !target_post.creator.equals(user._id)) {
                 throw new GraphQLError('request not authorized');
             }
 

@@ -7,6 +7,7 @@ import albumModel from '../models/albumModel';
 import { userSongDelete } from './userResolver';
 import { postSongDelete } from './postResolver';
 import { Post } from '../../interfaces/Post';
+import { AlbumDatabase } from '../../interfaces/Album';
 
 export default {
     User: {
@@ -56,6 +57,8 @@ export default {
                 const album = await albumModel.findById(args.song.album);
                 if (!album) {
                     throw new GraphQLError('album not found');
+                } else if (!album.creator.equals(user._id)) {
+                    throw new GraphQLError('request not authorized');
                 } else {
                     args.song.cover = album.cover;
                 }
@@ -90,7 +93,7 @@ export default {
             }
 
             // Check privileges
-            if (['admin', 'root'].indexOf(user.role) === -1 && !target_song.creator._id.equals(user._id)) {
+            if (['admin', 'root'].indexOf(user.role) === -1 && !target_song.creator.equals(user._id)) {
                 throw new GraphQLError('request not authorized');
             }
 
@@ -104,6 +107,8 @@ export default {
                 const album = await albumModel.findById(args.song.album);
                 if (!album) {
                     throw new GraphQLError('album not found');
+                } else if (!album.creator.equals(user._id)) {
+                    throw new GraphQLError('request not authorized');
                 } else {
                     args.song.cover = album.cover;
                 }
@@ -137,7 +142,7 @@ export default {
             }
 
             // Check privileges
-            if (['admin', 'root'].indexOf(user.role) === -1 && !target_song.creator._id.equals(user._id)) {
+            if (['admin', 'root'].indexOf(user.role) === -1 && !target_song.creator.equals(user._id)) {
                 throw new GraphQLError('request not authorized');
             }
 
@@ -149,6 +154,7 @@ export default {
                 throw new GraphQLError('song not deleted');
             }
 
+            // Delete dependencies for the deleted instance
             await deleteDependencies(args._id);
 
             return true;
@@ -173,9 +179,14 @@ const songUserDelete = async (user_id: string) => {
     await songModel.deleteMany({ creator: user_id });
 }
 
+// Behaviour when an album was updated
+const songAlbumUpdate = async (album: AlbumDatabase) => {
+    await songModel.updateMany({ album: album._id }, { cover: album.cover });
+}
+
 // Behaviour when an album was deleted
 const songAlbumDelete = async (album_id: string) => {
     await songModel.updateMany({ album: album_id }, { $unset: { album: "" } });
 }
 
-export { songUserDelete, songAlbumDelete }
+export { songUserDelete, songAlbumUpdate, songAlbumDelete }

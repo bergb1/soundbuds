@@ -4,9 +4,8 @@ import { Song } from "../../interfaces/Song";
 import { User, UserIdWithToken } from "../../interfaces/User";
 import albumModel from "../models/albumModel";
 import { Types } from 'mongoose';
-import songModel from '../models/songModel';
 import { userAlbumDelete } from './userResolver';
-import { songAlbumDelete } from './songResolver';
+import { songAlbumDelete, songAlbumUpdate } from './songResolver';
 
 export default {
     User: {
@@ -80,7 +79,7 @@ export default {
             }
 
             // Check privileges
-            if (['admin', 'root'].indexOf(user.role) === -1 && !target_album.creator._id.equals(user._id)) {
+            if (['admin', 'root'].indexOf(user.role) === -1 && !target_album.creator.equals(user._id)) {
                 throw new GraphQLError('request not authorized');
             }
 
@@ -94,7 +93,7 @@ export default {
             
             // If the cover was changed, change song covers aswell
             if (args.album.cover) {
-                await songModel.updateMany({ album: album._id }, { cover: album.cover });
+                await songAlbumUpdate(album);
             }
             
             return album;
@@ -129,6 +128,7 @@ export default {
                 throw new GraphQLError('album not deleted');
             }
 
+            // Delete dependencies for the deleted instance
             await deleteDependencies(args._id);
             
             return true;
