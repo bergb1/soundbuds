@@ -267,14 +267,14 @@ describe('Testing graphql api', () => {
         }))._id!;
     });
 
-    /* Get all user posts
+    // Get all user posts
     it(`should return all posts made by a user`, async () => {
         await postGetForUser(app, {
             _id: testAdmin._id!
         });
     });
 
-    // Get all following posts
+    /* Get all following posts
     it(`should return all posts from people you are following`, async () => {
         await postGetFollowing(app, testCreatorData.token!);
     });

@@ -19,7 +19,7 @@ input PostUpdate {
 }
 
 type Query {
-    postsUser(_id: ID!): [Post]
+    postsUser(creator: ID!): [Post]
     postsFollowing: [Post]
 }
 

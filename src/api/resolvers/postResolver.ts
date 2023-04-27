@@ -9,10 +9,12 @@ export default {
         postsUser: async (
             _parent: undefined,
             args: {
-                _id: string
+                creator: string
             }
         ) => {
-
+            return await postModel
+                .find({ creator: args.creator })
+                .select('-__v');
         },
         postsFollowing: async (
             _parent: undefined,
