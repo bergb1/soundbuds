@@ -2,14 +2,10 @@ import express from 'express';
 import uploadRoute from './routes/uploadRoute';
 import MessageResponse from '../interfaces/MessageResponse';
 
+// Create a router
 const router = express.Router();
 
-router.get<{}, MessageResponse>('/', (req, res) => {
-    res.json({
-        message: 'routes: upload',
-    });
-});
-
+// Assign the upload route
 router.use('/upload', uploadRoute);
 
 export default router;
