@@ -12,6 +12,7 @@ import { followerUserDelete } from './followerResolver';
 import { songUserDelete } from './songResolver';
 import { albumUserDelete } from './albumResolver';
 import { postUserDelete } from './postResolver';
+import { Post } from '../../interfaces/Post';
 
 // Function to check if user one may modify user two
 const mayModify = async (user_role: string, target_id: string, role?: string) => {
@@ -46,6 +47,11 @@ export default {
     },
     Album: {
         creator: async (parent: Album) => {
+            return await userModel.findById(parent.creator);
+        }
+    },
+    Post: {
+        creator: async (parent: Post) => {
             return await userModel.findById(parent.creator);
         }
     },
@@ -284,12 +290,12 @@ const deleteDependencies = async (user_id: string) => {
 
 // Behaviour when a song was deleted
 const userSongDelete = async (song_id: string) => {
-    await userModel.updateMany({ favorite_song: song_id }, { favorite_song: null });
+    await userModel.updateMany({ favorite_song: song_id }, { $unset: { favorite_song: "" } });
 }
 
 // Behaviour when an album was deleted
 const userAlbumDelete = async (album_id: string) => {
-    await userModel.updateMany({ favorite_album: album_id }, { favorite_album: null });
+    await userModel.updateMany({ favorite_album: album_id }, { $unset: { favorite_album: "" } });
 }
 
 export { userSongDelete, userAlbumDelete }

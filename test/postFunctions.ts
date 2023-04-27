@@ -37,6 +37,7 @@ const postCreate = (
                     reject(err);
                 } else {
                     const resp = response.body.data.postCreate as PostTest;
+                    console.log(response.body);
                     expect(resp._id).toBeDefined();
                     expect(resp.message).toBe(args.post.message);
                     expect(resp.date).toBeDefined();

@@ -129,7 +129,8 @@ export default {
                 throw new GraphQLError('album not deleted');
             }
 
-            deleteDependencies(args._id);
+            await deleteDependencies(args._id);
+            
             return true;
         }
     }

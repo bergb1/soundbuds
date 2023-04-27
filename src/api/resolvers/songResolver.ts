@@ -6,11 +6,17 @@ import { Types } from 'mongoose';
 import albumModel from '../models/albumModel';
 import { userSongDelete } from './userResolver';
 import { postSongDelete } from './postResolver';
+import { Post } from '../../interfaces/Post';
 
 export default {
     User: {
         favorite_song: async (parent: User) => {
             return await songModel.findById(parent.favorite_song);
+        }
+    },
+    Post: {
+        song: async (parent: Post) => {
+            return await songModel.findById(parent.song);
         }
     },
     Query: {
@@ -143,7 +149,8 @@ export default {
                 throw new GraphQLError('song not deleted');
             }
 
-            deleteDependencies(args._id);
+            await deleteDependencies(args._id);
+
             return true;
         }
     }
@@ -168,7 +175,7 @@ const songUserDelete = async (user_id: string) => {
 
 // Behaviour when an album was deleted
 const songAlbumDelete = async (album_id: string) => {
-    songModel.updateMany({ album: album_id }, { album: null });
+    await songModel.updateMany({ album: album_id }, { $unset: { album: "" } });
 }
 
 export { songUserDelete, songAlbumDelete }
