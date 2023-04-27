@@ -5,6 +5,7 @@ import songModel from "../models/songModel";
 import { Types } from 'mongoose';
 import albumModel from '../models/albumModel';
 import { userSongDelete } from './userResolver';
+import { postSongDelete } from './postResolver';
 
 export default {
     User: {
@@ -148,22 +149,24 @@ export default {
     }
 }
 
+// Behaviour when a song was deleted
 const deleteDependencies = async (song_id: string) => {
-    // Handle optional dependencies
+    await postSongDelete(song_id);
     await userSongDelete(song_id);
 }
 
+// Behaviour when a user was deleted
 const songUserDelete = async (user_id: string) => {
-    // Manage own dependend instances
+    // Manage own dependencies
     const songs = await songModel.find({ creator: user_id });
     for (let i = 0; i < songs.length; i++) {
         await deleteDependencies(songs[i]._id.valueOf());
     }
 
-    // Delete all songs created by the user
     await songModel.deleteMany({ creator: user_id });
 }
 
+// Behaviour when an album was deleted
 const songAlbumDelete = async (album_id: string) => {
     songModel.updateMany({ album: album_id }, { album: null });
 }

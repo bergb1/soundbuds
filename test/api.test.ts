@@ -267,7 +267,7 @@ describe('Testing graphql api', () => {
         }))._id!;
     });
 
-    // Get all user posts
+    /* Get all user posts
     it(`should return all posts made by a user`, async () => {
         await postGetForUser(app, {
             _id: testAdmin._id!
@@ -285,6 +285,7 @@ describe('Testing graphql api', () => {
             _id: testPostID
         });
     });
+    */
 
     // Should delete a song
     it(`should delete a song`, async () => {

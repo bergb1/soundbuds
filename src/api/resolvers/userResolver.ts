@@ -11,6 +11,7 @@ import { Album } from '../../interfaces/Album';
 import { followerUserDelete } from './followerResolver';
 import { songUserDelete } from './songResolver';
 import { albumUserDelete } from './albumResolver';
+import { postUserDelete } from './postResolver';
 
 // Function to check if user one may modify user two
 const mayModify = async (user_role: string, target_id: string, role?: string) => {
@@ -273,17 +274,20 @@ export default {
     }
 };
 
+// Behaviour when a user was deleted
 const deleteDependencies = async (user_id: string) => {
-    // Handle strict dependencies
-    await followerUserDelete(user_id);
     await songUserDelete(user_id);
     await albumUserDelete(user_id);
+    await followerUserDelete(user_id);
+    await postUserDelete(user_id);
 }
 
+// Behaviour when a song was deleted
 const userSongDelete = async (song_id: string) => {
     await userModel.updateMany({ favorite_song: song_id }, { favorite_song: null });
 }
 
+// Behaviour when an album was deleted
 const userAlbumDelete = async (album_id: string) => {
     await userModel.updateMany({ favorite_album: album_id }, { favorite_album: null });
 }

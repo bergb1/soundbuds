@@ -141,19 +141,17 @@ const deleteDependencies = async (album_id: string) => {
     await songAlbumDelete(album_id);
 }
 
+// Behaviour when a user was deleted
 const albumUserDelete = async (
     user_id: string
-): Promise<boolean> => {
-    // Manage own dependend instances
+) => {
+    // Manage own dependencies
     const albums = await albumModel.find({ creator: user_id });
     for (let i = 0; i < albums.length; i++) {
         await deleteDependencies(albums[i]._id.valueOf());
     }
 
-    // Delete all albums created by the user
     await albumModel.deleteMany({ creator: user_id });
-
-    return true;
 }
 
 export { albumUserDelete }
