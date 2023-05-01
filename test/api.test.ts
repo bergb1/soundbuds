@@ -2,7 +2,7 @@ import app from '../src/app';
 import randomstring from 'randomstring';
 import { getNotFound } from './testFunctions';
 import { UserTest } from '../src/interfaces/User';
-import { getSingleUser, getUserByName, userDelete, userDeleteByID, userElevate, userLogin, userRegister, userUpdate, userUpdateByID } from './userFunctions';
+import { getSingleUser, getUserByName, getUserByToken, userDelete, userDeleteByID, userElevate, userLogin, userRegister, userUpdate, userUpdateByID } from './userFunctions';
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 import userModel from '../src/api/models/userModel';
 import { followMutuals, followUser, followerRelationsRemoved, followers, following, unfollowUser } from './followFunctions';
@@ -43,6 +43,14 @@ describe('Testing graphql api', () => {
         testCreator._id = (await userRegister(app, testCreator)).user._id;
     });
 
+    // Admin user for testing with illegal self-assigned role
+    let testAdmin: UserTest = {
+        username: 'Test Admin ' + randomstring.generate(7),
+        email: randomstring.generate(9) + '@admin.fi',
+        password: 'testpassword',
+        role: 'admin'
+    };
+
     // Admin register
     it('should register a user', async () => {
         testAdmin._id = (await userRegister(app, testAdmin)).user._id;
@@ -51,14 +59,6 @@ describe('Testing graphql api', () => {
             throw new Error('User was created with admin role');
         }
     });
-
-    // Admin user for testing with illegal self-assigned role
-    let testAdmin: UserTest = {
-        username: 'Test Admin ' + randomstring.generate(7),
-        email: randomstring.generate(9) + '@admin.fi',
-        password: 'testpassword',
-        role: 'admin'
-    };
 
     // Get Single test
     it(`should get the admin user`, async () => {
@@ -78,6 +78,11 @@ describe('Testing graphql api', () => {
             email: process.env.ROOT_EMAIL as string,
             password: process.env.ROOT_PWD as string
         });
+    });
+
+    // Get current user test
+    it(`should get the logged in user`, async () => {
+        await getUserByToken(app, rootUserData.token!);
     });
 
     // User login

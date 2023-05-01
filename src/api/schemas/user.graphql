@@ -46,6 +46,7 @@ input AdminModify {
 
 type Query {
     userSearch(username: String!): [User]
+    userFromToken: User
     user(_id: ID!): User
 }
 

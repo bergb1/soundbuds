@@ -1,6 +1,6 @@
 import request from 'supertest';
 import expect from 'expect';
-import {UserTest} from '../src/interfaces/User';
+import {User, UserTest} from '../src/interfaces/User';
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 import randomstring from 'randomstring';
 
@@ -357,6 +357,45 @@ const getSingleUser = (
     });
 };
 
+// Get logged in user
+const getUserByToken = (
+    url: string | Function,
+    token: string
+): Promise<UserTest> => {
+    return new Promise((resolve, reject) => {
+        request(url)
+            .post('/graphql')
+            .set('Content-type', 'application/json')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+                query: 
+                    `query UserFromToken {
+                        userFromToken {
+                            _id
+                            username
+                            email
+                            nickname
+                            profile_color
+                        }
+                    }`
+            })
+            .expect(200, (err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const resp = response.body.data.userFromToken;
+                    expect(resp).toHaveProperty('_id');
+                    expect(resp).toHaveProperty('username');
+                    expect(resp).toHaveProperty('email');
+                    expect(resp).toHaveProperty('profile_color');
+                    expect(resp).not.toHaveProperty('password');
+                    expect(resp).not.toHaveProperty('role');
+                    resolve(resp);
+                }
+            });
+    });
+}
+
 // Get by matching usernames test
 const getUserByName = (
     url: string | Function,
@@ -404,4 +443,4 @@ const getUserByName = (
     });
 };
 
-export { userRegister, userLogin, userElevate, userUpdate, userUpdateByID, userDelete, userDeleteByID, getSingleUser, getUserByName }
+export { userRegister, userLogin, userElevate, userUpdate, userUpdateByID, userDelete, userDeleteByID, getSingleUser, getUserByToken, getUserByName }
