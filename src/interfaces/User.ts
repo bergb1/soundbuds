@@ -6,6 +6,7 @@ interface User {
     email: string;
     password: string;
     role: 'admin' | 'creator' | 'user' | 'root';
+    profile?: string;
     nickname?: string;
     profile_color: string;
     favorite_song?: Types.ObjectId;
