@@ -27,5 +27,30 @@ const coverPost = async (
     }
 }
 
+// - profilePost - upload a profile picture for the user
+const profilePost = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        // Check if there is a file
+        if (!req.file) {
+            throw new CustomError('file not valid', 400);
+        }
+
+        // Create a response
+        const output: UploadMessageResponse = {
+            message: 'profile picture uploaded',
+            data: {
+                filename: `${req.file.filename}_profile`
+            }
+        }
+        res.json(output);
+    } catch (err) {
+        next(new CustomError((err as Error).message, 500));
+    }
+}
+
 // Manage export
-export default coverPost;
+export { coverPost, profilePost }

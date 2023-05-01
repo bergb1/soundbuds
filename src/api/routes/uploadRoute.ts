@@ -1,11 +1,9 @@
-import jwt from 'jsonwebtoken';
 import { unlink } from 'node:fs';
 import express, {NextFunction, Request, Response} from 'express';
 import sharp from 'sharp';
 import multer, {FileFilterCallback} from 'multer';
-import coverPost from '../controllers/uploadController';
+import { coverPost, profilePost } from '../controllers/uploadController';
 import CustomError from '../../classes/CustomError';
-import { UserIdWithToken } from '../../interfaces/User';
 import auth from '../../auth';
 
 const authorizeUpload = async (
@@ -34,8 +32,6 @@ const fileFilter = (
   }
 };
 
-const upload = multer({dest: './uploads/', fileFilter});
-
 const makeThumbnail = async (
   req: Request,
   _res: Response,
@@ -54,6 +50,24 @@ const makeThumbnail = async (
   }
 };
 
+const makeProfile = async (
+  req: Request,
+  _res: Response,
+  next: NextFunction
+) => {
+  try {
+    const outputFile = req.file?.path + '_profile'
+    await sharp(req.file?.path)
+      .resize(256, 256)
+      .png()
+      .toFile(outputFile);
+    console.log(outputFile + ' created');
+    next();
+  } catch (err) {
+    next(new CustomError('thumbnail not created', 500));
+  }
+}
+
 const removeOriginal = async (
   req: Request,
   _res: Response,
@@ -70,15 +84,25 @@ const removeOriginal = async (
 }
 
 const router = express.Router();
+const upload = multer({dest: './uploads/', fileFilter});
 
 router
-  .route('/')
+  .route('/cover')
   .post(
     authorizeUpload,
     upload.single('cover'),
     makeThumbnail,
     removeOriginal,
     coverPost
+  );
+
+router
+  .route('/profile')
+  .post(
+    upload.single('profile'),
+    makeProfile,
+    removeOriginal,
+    profilePost
   );
 
 export default router;
