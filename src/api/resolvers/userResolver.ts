@@ -64,6 +64,19 @@ export default {
                 .findById(args._id)
                 .select('-__v -password -role');
         },
+        userFromToken: async (
+            _parent: unknown,
+            _args: unknown,
+            user: UserIdWithToken
+        ) => {
+            if (!user.token) {
+                throw new GraphQLError('not logged in');
+            }
+            
+            return await userModel
+                .findById(user._id)
+                .select('-__v -password -role');
+        },
         userSearch: async (
             _parent: unknown,
             args: {username: string}
