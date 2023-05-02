@@ -84,6 +84,17 @@ export default {
             return await userModel
                 .find({ username: { $regex: `(?i)(\w*(${args.username})\w*)` } })
                 .select('-__v -password -role');
+        },
+        userIsAdmin: async (
+            _parent: unknown,
+            _args: unknown,
+            user: UserIdWithToken
+        ) => {
+            if (!user.token) {
+                throw new GraphQLError('not logged in');
+            }
+
+            return ['admin', 'root'].indexOf(user.role) > -1;
         }
     },
     Mutation: {

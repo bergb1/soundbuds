@@ -4,7 +4,7 @@ type User {
     email: String!
     profile: String
     nickname: String
-    profile_color: String
+    profile_color: String!
     favorite_song: Song
     favorite_album: Album
 }
@@ -49,6 +49,7 @@ type Query {
     userSearch(username: String!): [User]
     userFromToken: User
     user(_id: ID!): User
+    userIsAdmin: Boolean
 }
 
 type Mutation {
