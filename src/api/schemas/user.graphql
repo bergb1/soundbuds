@@ -29,6 +29,7 @@ input UserInput {
 input UserModify {
     email: String
     password: String
+    profile: String
     nickname: String
     profile_color: String
     favorite_song: ID
@@ -39,10 +40,11 @@ input AdminModify {
     username: String
     email: String
     password: String
+    profile: String
     nickname: String
     profile_color: String
-    favorite_song: String
-    favorite_album: String
+    favorite_song: ID
+    favorite_album: ID
 }
 
 type Query {
