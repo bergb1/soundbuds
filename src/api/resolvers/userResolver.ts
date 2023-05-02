@@ -13,6 +13,7 @@ import { songUserDelete } from './songResolver';
 import { albumUserDelete } from './albumResolver';
 import { postUserDelete } from './postResolver';
 import { Post } from '../../interfaces/Post';
+import followerModel from '../models/followerModel';
 
 // Function to check if user one may modify user two
 const mayModify = async (user_role: string, target_id: string, role?: string) => {
@@ -95,6 +96,18 @@ export default {
             }
 
             return ['admin', 'root'].indexOf(user.role) > -1;
+        },
+        userIsFollowing: async (
+            _parent: unknown,
+            args: {_id: string},
+            user: UserIdWithToken
+        ) => {
+            if (!user.token) {
+                throw new GraphQLError('not logged in');
+            }
+
+            const resp = await followerModel.find({user: user._id, target: args._id});
+            return resp.length > 0;
         }
     },
     Mutation: {
