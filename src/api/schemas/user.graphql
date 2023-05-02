@@ -2,6 +2,7 @@ type User {
     _id: ID!
     username: String!
     email: String!
+    profile: String
     nickname: String
     profile_color: String
     favorite_song: Song

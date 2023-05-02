@@ -10,7 +10,7 @@ const coverUpload = (
 ): Promise<UploadMessageResponse> => {
     return new Promise((resolve, reject) => {
         request(url)
-            .post('/api/upload')
+            .post('/api/upload/cover')
             .set('Authorization', 'Bearer ' + token)
             .attach('cover', 'test/' + args.path)
             .expect(200, (err, response) => {
