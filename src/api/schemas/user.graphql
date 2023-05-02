@@ -50,6 +50,7 @@ type Query {
     userFromToken: User
     user(_id: ID!): User
     userIsAdmin: Boolean
+    userIsFollowing(_id: ID!): Boolean
 }
 
 type Mutation {
