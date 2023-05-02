@@ -86,7 +86,7 @@ export default {
                 .find({ username: { $regex: `(?i)(\w*(${args.username})\w*)` } })
                 .select('-__v -password -role');
         },
-        userIsAdmin: async (
+        userGetRole: async (
             _parent: unknown,
             _args: unknown,
             user: UserIdWithToken
@@ -95,7 +95,7 @@ export default {
                 throw new GraphQLError('not logged in');
             }
 
-            return ['admin', 'root'].indexOf(user.role) > -1;
+            return user.role;
         },
         userIsFollowing: async (
             _parent: unknown,

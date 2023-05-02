@@ -38,7 +38,7 @@ const makeThumbnail = async (
   next: NextFunction
 ) => {
   try {
-    const outputFile = req.file?.path + '_thumb'
+    const outputFile = req.file?.path + '_thumb.jpg'
     await sharp(req.file?.path)
       .resize(256, 256)
       .png()
@@ -56,7 +56,7 @@ const makeProfile = async (
   next: NextFunction
 ) => {
   try {
-    const outputFile = req.file?.path + '_profile'
+    const outputFile = req.file?.path + '_profile.jpg'
     await sharp(req.file?.path)
       .resize(256, 256)
       .png()
@@ -64,7 +64,7 @@ const makeProfile = async (
     console.log(outputFile + ' created');
     next();
   } catch (err) {
-    next(new CustomError('thumbnail not created', 500));
+    next(new CustomError('profile not created', 500));
   }
 }
 

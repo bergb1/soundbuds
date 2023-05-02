@@ -11,6 +11,7 @@ import MyContext from './interfaces/MyContext';
 import { expressMiddleware } from '@apollo/server/express4';
 import authenticate from './auth';
 import { notFound, errorHandler } from './middlewares';
+import { join } from 'path';
 
 // Configuration for Express
 const conf_app = async (app: Express) => {
@@ -49,6 +50,7 @@ const conf_app = async (app: Express) => {
         );
 
         app.use('/api', api);
+        app.use('/images', express.static('uploads'));
         app.use(notFound);
         app.use(errorHandler);
     } catch (err) {

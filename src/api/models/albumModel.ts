@@ -7,16 +7,15 @@ const albumModel = new mongoose.Schema<AlbumDatabase>({
         required: true
     },
     cover: {
-        type: String,
-        required: true
+        type: String
     },
     description: {
-        type: String,
+        type: String
     },
     creator: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
+        required: true
     }
 });
 
