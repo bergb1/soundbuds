@@ -3,8 +3,8 @@ import { Document, Types } from "mongoose";
 // Regular Album interface
 interface Album {
     name: string;
-    cover: string;
-    description: string;
+    cover?: string;
+    description?: string;
     creator: Types.ObjectId;
 }
 

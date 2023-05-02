@@ -3,8 +3,8 @@ import { Document, Types } from "mongoose";
 // Regular Song interface
 interface Song {
     name: string;
-    cover: string;
-    description: string;
+    cover?: string;
+    description?: string;
     creator: Types.ObjectId;
     album?: Types.ObjectId;
 }

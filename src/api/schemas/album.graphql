@@ -1,14 +1,14 @@
 type Album {
     _id: ID!
     name: String!
-    cover: String!
+    cover: String
     description: String
     creator: User!
 }
 
 input AlbumInput {
     name: String!
-    cover: String!
+    cover: String
     description: String
 }
 

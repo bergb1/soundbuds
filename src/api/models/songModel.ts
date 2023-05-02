@@ -7,16 +7,15 @@ const songModel = new mongoose.Schema<SongDatabase>({
         required: true
     },
     cover: {
-        type: String,
-        required: true
+        type: String
     },
     description: {
-        type: String,
+        type: String
     },
     creator: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
+        required: true
     },
     album: {
         type: mongoose.Schema.Types.ObjectId,
