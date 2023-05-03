@@ -49,7 +49,7 @@ const userRegister = (
                     expect(resp.user).not.toHaveProperty('role');
                     expect(resp.user.username).toBe(user.username);
                     expect(resp.user.email).toBe(user.email);
-                    expect(resp.user.profile_color).toBe('cyan');
+                    expect(resp.user.profile_color).toBe('DodgerBlue');
                     resolve(resp);
                 }
             });
