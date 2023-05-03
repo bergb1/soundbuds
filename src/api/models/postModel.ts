@@ -8,7 +8,7 @@ const postModel = new mongoose.Schema<PostDatabase>({
     },
     date: {
         type: Date,
-        default: new Date()
+        default: () => Date.now()
     },
     creator: {
         type: mongoose.Schema.Types.ObjectId,
