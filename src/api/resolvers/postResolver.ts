@@ -38,15 +38,16 @@ export default {
                 .select('-__v -_id');
 
             // Get all the posts from people the user is following
-            let resp;
+            let resp: PostDatabase[] = [];
             for (let i = 0; i < following.length; i++) {
                 // Get all posts by the followed user
                 const posts = await postModel
-                    .find({ creator: following[i].target })
-                    .select('-__v');
+                    .find({ creator: following[i].target });
                 
                 // Add the posts to the response
-                resp ? resp.concat(posts) : resp = posts ;
+                posts.forEach(post => {
+                    resp.push(post);
+                });
             }
 
             // Validate the response
