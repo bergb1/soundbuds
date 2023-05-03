@@ -31,7 +31,7 @@ const rootUser = async () => {
       email: process.env.ROOT_EMAIL as string,
       password: await bcrypt.hash(process.env.ROOT_PWD as string, salt),
       role: 'root',
-      profile_color: 'black'
+      profile_color: 'LightGray'
     }
     
     // Validate the root
