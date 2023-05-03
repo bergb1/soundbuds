@@ -5,7 +5,7 @@ import { UserTest } from '../src/interfaces/User';
 import { getSingleUser, getUserByName, getUserByToken, userDelete, userDeleteByID, userElevate, userLogin, userRegister, userUpdate, userUpdateByID } from './userFunctions';
 import LoginMessageResponse from '../src/interfaces/LoginMessageResponse';
 import userModel from '../src/api/models/userModel';
-import { followMutuals, followUser, followerRelationsRemoved, followers, following, unfollowUser } from './followFunctions';
+import { followUser, followerRelationsRemoved, followers, following, unfollowUser } from './followFunctions';
 import { coverUpload, songCreate, songDelete, songSearch, songUpdate } from './songFunctions';
 import { SongTest } from '../src/interfaces/Song';
 import { albumCreate, albumDelete, albumSearch, albumUpdate } from './albumFunctions';
@@ -243,17 +243,12 @@ describe('Testing graphql api', () => {
 
     // Followers get test
     it(`should find followers for the creator`, async () => {
-        await followers(app, testCreatorData.token!);
+        await followers(app, testCreator._id!);
     });
 
     // Following get test
     it(`should find users the creator is following`, async () => {
-        await following(app, testCreatorData.token!);
-    });
-
-    // Mutual follower test
-    it(`should find one mutual follower`, async () => {
-        await followMutuals(app, testCreatorData.token!);
+        await following(app, testCreator._id!);
     });
 
     // Unfollow test
@@ -315,6 +310,6 @@ describe('Testing graphql api', () => {
 
     // Dependencies test
     it(`should find no follower relationships with deleted dependencies`, async () => {
-        await followerRelationsRemoved(app, testCreatorData.token!);
+        await followerRelationsRemoved(app, testCreator._id!);
     });
 });
