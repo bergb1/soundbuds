@@ -76,20 +76,22 @@ const unfollowUser = (
 
 const followers = (
     url: string | Function,
-    token: string
+    _id: string
 ): Promise<string[]> => {
     return new Promise((resolve, reject) => {
         request(url)
             .post('/graphql')
             .set('Content-type', 'application/json')
-            .set('Authorization', 'Bearer ' + token)
             .send({
                 query:
                 `
-                    query Query {
-                        followers
+                    query Query($id: String!) {
+                        followers(_id: $id)
                     }
-                `
+                `,
+                variables: {
+                    id: _id
+                }
             })
             .expect(200, (err, response) => {
                 if (err) {
@@ -106,20 +108,22 @@ const followers = (
 
 const following = (
     url: string | Function,
-    token: string
+    _id: string
 ) => {
     return new Promise((resolve, reject) => {
         request(url)
             .post('/graphql')
             .set('Content-type', 'application/json')
-            .set('Authorization', 'Bearer ' + token)
             .send({
                 query:
                 `
-                    query Query {
-                        following
+                    query Query($id: String!) {
+                        following(_id: $id)
                     }
-                `
+                `,
+                variables: {
+                    id: _id
+                }
             })
             .expect(200, (err, response) => {
                 if (err) {
@@ -134,53 +138,24 @@ const following = (
     });
 }
 
-const followMutuals = (
-    url: string | Function,
-    token: string
-) => {
-    return new Promise((resolve, reject) => {
-        request(url)
-            .post('/graphql')
-            .set('Content-type', 'application/json')
-            .set('Authorization', 'Bearer ' + token)
-            .send({
-                query:
-                `
-                    query Query {
-                        followMutuals
-                    }
-                `
-            })
-            .expect(200, (err, response) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    const resp: string[] = response.body.data.followMutuals;
-                    expect(resp).toBeDefined();
-                    expect(resp).toBeInstanceOf(Array);
-                    expect(resp.length).toBe(1);
-                    resolve(resp);
-                }
-            });
-    });
-}
-
 const followerRelationsRemoved = (
     url: string | Function,
-    token: string
+    _id: string
 ) => {
     return new Promise((resolve, reject) => {
         request(url)
             .post('/graphql')
             .set('Content-type', 'application/json')
-            .set('Authorization', 'Bearer ' + token)
             .send({
                 query:
                 `
-                    query Query {
-                        followers
+                    query Query($id: String!) {
+                        followers(_id: $id)
                     }
-                `
+                `,
+                variables: {
+                    id: _id
+                }
             })
             .expect(200, (err, response) => {
                 if (err) {
@@ -196,4 +171,4 @@ const followerRelationsRemoved = (
     });
 }
 
-export { followUser, unfollowUser, followers, following, followMutuals, followerRelationsRemoved };
+export { followUser, unfollowUser, followers, following, followerRelationsRemoved };

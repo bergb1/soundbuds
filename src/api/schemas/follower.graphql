@@ -9,9 +9,8 @@ type DeleteMessage {
 }
 
 type Query {
-    followers: [ID]
-    following: [ID]
-    followMutuals: [ID]
+    followers(_id: String!): [ID]
+    following(_id: String!): [ID]
 }
 
 type Mutation {
