@@ -29,7 +29,7 @@ const userModel = new mongoose.Schema<UserDatabase>({
     },
     profile_color: {
         type: String,
-        default: 'cyan'
+        default: 'DodgerBlue'
     },
     favorite_song: {
         type: mongoose.Schema.Types.ObjectId,

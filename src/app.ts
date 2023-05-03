@@ -11,7 +11,6 @@ import MyContext from './interfaces/MyContext';
 import { expressMiddleware } from '@apollo/server/express4';
 import authenticate from './auth';
 import { notFound, errorHandler } from './middlewares';
-import { join } from 'path';
 
 // Configuration for Express
 const conf_app = async (app: Express) => {
