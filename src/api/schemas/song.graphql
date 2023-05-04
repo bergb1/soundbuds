@@ -22,6 +22,7 @@ input SongUpdate {
 }
 
 type Query {
+    songsUser(creator: ID!): [Song]
     songSearch(name: String!): [Song]
 }
 
