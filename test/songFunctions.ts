@@ -18,6 +18,7 @@ const coverUpload = (
                     reject(err);
                 } else {
                     const resp = response.body;
+                    console.log(resp.data.filename);
                     expect(resp).toHaveProperty('message');
                     expect(resp).toHaveProperty('data');
                     expect(resp.data).toHaveProperty('filename');
