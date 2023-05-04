@@ -21,6 +21,16 @@ export default {
         }
     },
     Query: {
+        songsUser: async (
+            _parent: unknown,
+            args: {
+                creator: string;
+            }
+        ) => {
+            return await songModel
+                .find({ creator: args.creator })
+                .select('-__v');
+        },
         songSearch: async (
             _parent: undefined,
             args: {
