@@ -18,7 +18,7 @@ const coverPost = async (
         const output: UploadMessageResponse = {
             message: 'cover uploaded',
             data: {
-                filename: `${req.file.filename}_thumb.jpg`
+                filename: `/images/${req.file.filename}_thumb.jpg`
             }
         }
         res.json(output);
@@ -43,7 +43,7 @@ const profilePost = async (
         const output: UploadMessageResponse = {
             message: 'profile picture uploaded',
             data: {
-                filename: `${req.file.filename}_profile.jpg`
+                filename: `/images/${req.file.filename}_profile.jpg`
             }
         }
         res.json(output);

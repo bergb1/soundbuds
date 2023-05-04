@@ -11,6 +11,8 @@ import MyContext from './interfaces/MyContext';
 import { expressMiddleware } from '@apollo/server/express4';
 import authenticate from './auth';
 import { notFound, errorHandler } from './middlewares';
+import {createRateLimitRule} from 'graphql-rate-limit';
+import {shield} from 'graphql-shield';
 
 // Configuration for Express
 const conf_app = async (app: Express) => {
@@ -23,12 +25,23 @@ const conf_app = async (app: Express) => {
             })
         );
 
+        const rateLimitRule = createRateLimitRule({
+            identifyContext: (ctx) => ctx.id,
+          });
+      
+          const permissions = shield({
+            Mutation: {
+              login: rateLimitRule({window: '5s', max: 5}),
+            },
+          });
+
         // Setup graphql schema
         const schema = applyMiddleware(
             makeExecutableSchema({
                 typeDefs,
                 resolvers,
-            })
+            }),
+            permissions
         );
 
         // Setup apollo server
