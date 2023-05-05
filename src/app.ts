@@ -13,6 +13,10 @@ import authenticate from './auth';
 import { notFound, errorHandler } from './middlewares';
 import {createRateLimitRule} from 'graphql-rate-limit';
 import {shield} from 'graphql-shield';
+import {
+    ApolloServerPluginLandingPageLocalDefault,
+    ApolloServerPluginLandingPageProductionDefault,
+} from '@apollo/server/plugin/landingPage/default';
 
 // Configuration for Express
 const conf_app = async (app: Express) => {
@@ -48,6 +52,13 @@ const conf_app = async (app: Express) => {
         const server = new ApolloServer<MyContext>({
             schema,
             introspection: true,
+            plugins: [
+                process.env.NODE_ENV === 'production'
+                    ? ApolloServerPluginLandingPageProductionDefault({
+                        embed: true as false,
+                    })
+                    : ApolloServerPluginLandingPageLocalDefault(),
+            ],
             includeStacktraceInErrorResponses: false,
         });
         await server.start();
