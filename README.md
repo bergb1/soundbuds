@@ -1,6 +1,8 @@
 # soundbuds
 Social media platform where you can find other people with the same music interests as you. You can follow other people and check out what their opinions are on music created by popular artists.
 
+Deployment: [Website](https://salmon-pond-09616fc03.3.azurestaticapps.net)
+
 ## Description
 During the course "Server Side Scripting Frameworks" we had to make a personal project in which we would prove the skills we've learned during the course. In this project, I decided to create a login/registration system for users with four different roles and interactions between these users. It turned out fine, but getting all of the different social media interactions to work turned out to be harder than I first thought.
 
@@ -15,8 +17,12 @@ The roles I created were "user", "creator", "admin" and "root". The users are re
 ### Index Page
 After logging in, you see the index page. On this page you will see nothing except a search bar for searching users (searching for nothing shows all users). On the navigation bar you can click your own profile on the top-right and it will show you your user page.
 
+![Index Page](documentation/index.png)
+
 ### User page
 If you are an admin / root or if this is your own page, you will see an edit button on the top right of your profile. Clicking this button gives you the ability to change your (nick)name, favorite song and profile color. Clicking on the edit button also reveals the delete button for deleting your own or their profile. If you are viewing another profile than your own, you will also see a follow button which you can click to follow / unfollow users. Following a user makes sure you see their posts on your index page.
+
+![User Page](documentation/user.png)
 
 #### Posts
 On your own user page, you will also see a prompt on the top left to create a new post, on which you first need to search for a song (searching for nothing shows all songs) and select one to write a post about this song. Now you can write a message after you've picked a song and you can create a post, which will show up on the index page of everyone who follows you.
