@@ -8,6 +8,7 @@ import { userSongDelete } from './userResolver';
 import { postSongDelete } from './postResolver';
 import { Post } from '../../interfaces/Post';
 import { AlbumDatabase } from '../../interfaces/Album';
+import userModel from '../models/userModel';
 
 export default {
     User: {
@@ -72,6 +73,12 @@ export default {
                 } else {
                     args.song.cover = album.cover;
                 }
+            }
+
+            // Check if dependancies still exist
+            let dep = await userModel.findById(user._id);
+            if (!dep) {
+                throw new Error('creator not found');
             }
 
             // Execute the request
