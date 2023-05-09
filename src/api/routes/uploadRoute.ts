@@ -43,7 +43,6 @@ const makeThumbnail = async (
       .resize(256, 256)
       .png()
       .toFile(outputFile);
-    console.log(outputFile + ' created');
     next();
   } catch (error) {
     next(new CustomError('thumbnail not created', 500));

@@ -6,6 +6,7 @@ import albumModel from "../models/albumModel";
 import { Types } from 'mongoose';
 import { userAlbumDelete } from './userResolver';
 import { songAlbumDelete, songAlbumUpdate } from './songResolver';
+import userModel from '../models/userModel';
 
 export default {
     User: {
@@ -49,6 +50,12 @@ export default {
 
             // Add the user as the creator
             args.album.creator = new Types.ObjectId(user._id);
+
+            // Check if dependancies still exist
+            let dep = await userModel.findById(user._id);
+            if (!dep) {
+                throw new Error('creator not found');
+            } 
 
             // Execute the request
             const album = await albumModel.create(args.album);

@@ -2,6 +2,7 @@ import { GraphQLError } from 'graphql';
 import { UserIdWithToken } from "../../interfaces/User";
 import followerModel from "../models/followerModel";
 import { Types } from 'mongoose';
+import userModel from '../models/userModel';
 
 export default {
     Query: {
@@ -42,6 +43,16 @@ export default {
             const following = await followerModel.findOne( { user: user._id, target: args.target_id } );
             if (following) {
                 throw new GraphQLError('already following');
+            }
+
+            // Check if dependancies still exist
+            let dep = await userModel.findById(user._id);
+            if (!dep) {
+                throw new Error('user not found');
+            }
+            dep = await userModel.findById(args.target_id);
+            if (!dep) {
+                throw new Error('target not found');
             }
 
             // Execute the request

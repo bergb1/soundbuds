@@ -4,6 +4,8 @@ import { UserIdWithToken } from "../../interfaces/User"
 import postModel from "../models/postModel"
 import { Types } from 'mongoose';
 import followerModel from '../models/followerModel';
+import userModel from '../models/userModel';
+import songModel from '../models/songModel';
 
 const comparePosts = (a: PostDatabase, b: PostDatabase) => {
     if (a.date < b.date) return -1;
@@ -75,6 +77,16 @@ export default {
 
             // Add the user as the creator
             args.post.creator = new Types.ObjectId(user._id);
+
+            // Check if dependancies still exist
+            let dep = await userModel.findById(user._id);
+            if (!dep) {
+                throw new Error('creator not found');
+            } 
+            dep = await songModel.findById(args.post.song);
+            if (!dep) {
+                throw new Error('song not found');
+            }
 
             // Execute the request
             const post = await postModel.create(args.post);
